@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #container {
+            color: red;
+        }
+
+        .container {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="outer">
+        <div id="inner">
+            <button id="clickMe">Click Me</button>
+        </div>
+    </div>
+
+    <!-- css specificity -->
+    <div class="container" id="container">
+        <ul class="unordered-list">
+            <li class="list-item">List item 01</li>
+            <li class="list-item">List item 02</li>
+            <li class="list-item">List item 03</li>
+            <li class="list-item">List item 04</li>
+            <li class="list-item">List item 05</li>
+        </ul>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur porro quae pariatur sit voluptate
+            obcaecati maiores debitis, nisi saepe fuga adipisci iure provident in aut animi eaque impedit aspernatur
+            officia!</p>
+    </div>
+
+    <!-- CSS selector -->
+    <p>
+        Write the CSS selector to only target the first list
+        item <strong>&lt;li&gt;One&lt;/li&gt;</strong>?
+    </p>
+    <div>
+        <ul>
+            <li>One</li>
+            <li>
+                <ul>
+                    <li>Two</li>
+                    <li>Three</li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>Four</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>Footer content goes here.</p>
+    </footer>
+    <script>
+        document.getElementById('outer').addEventListener('click', () => console.log('A'), true);
+        document.getElementById('outer').addEventListener('click', () => console.log('B'));
+        document.getElementById('inner').addEventListener('click', () => console.log('C'), true);
+        document.getElementById('inner').addEventListener('click', (e) => {
+            console.log('D')
+            e.stopPropagation();
+            console.log('E');
+        });
+        document.getElementById('clickMe').addEventListener('click', () => console.log('F'));
+        document.getElementById('clickMe').addEventListener('click', () => console.log('G'), true);
+    </script>
+</body>
+
+</html>

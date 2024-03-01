@@ -1,0 +1,118 @@
+<!-- HTML Challenges start -->
+
+Challenge 01
+----
+
+Spaghetti Recipe
+
+Ingredients
+    Spaghetti
+    Marinara Sauce
+    Salt
+    Water
+
+Instructions
+    Bring water to a boil.
+    Add spaghetti to boiling water.
+        Add salt to taste.
+        Cook for 10 minutes, stirring occasionally.
+    Add marinara Sauce to a pan, bringing to a simmer.
+    Mix cooked spaghetti with marinara sauce.
+
+Instructions by your special Chef.
+
+
+Challenge 02
+----
+
+Introducing Frontend Challenge Coin
+The future of decentralized meme currency is here.
+
+What is this Coin about?
+Frontend Challenge Coin utliizes a revolutionary proof-of-inverted-binary-tree consensus algorithm. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Pariatur atque alias facilis quidem aspernatur iste, itaque tempora sint cumque fugiat veniam eligendi distinctio, fugit quo animi dignissimos reprehenderit vero qui!.
+
+Where Do I Start?
+Getting started with Frontend Challenge Coin is as easy as reversing a linked list. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi, veniam! Et sunt reiciendis iste qui voluptatibus. Consequuntur delectus blanditiis neque non ea minus nisi facere? Ipsum, at minima culpa laboriosam id perferendis soluta cumque ad exercitationem commodi mollitia amet necessitatibus aspernatur sunt nihil. Ab nulla vero harum cum reiciendis perferendis!
+
+Copyright 2024(c) Frontend Challenge Coin. All rights reserved.
+
+
+Challenge 03 (Add appropriate form attributes)
+----
+<style>
+    form {
+        padding: 10px;
+        background-color: #ccc;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+</style>
+<form action="">
+    <label>Username: </label>
+    <input required>
+
+    <label>Password: </label>
+    <input required>
+
+    <label>Email: </label>
+    <input required>
+
+    <label>Password: </label>
+    <input required />
+    
+    <label>Phone Number: </label>
+    <input />
+
+    <label>Date of Birth: </label>
+    <input >
+   
+    <label>I agree to the TOS </label>
+    <input required>
+
+    <button>Sign Up</button>
+</form>
+
+<!-- HTML Challenges end -->
+
+<!-- CSS Challenges start -->
+Challenge 01
+----
+
+<nav>
+    <ul>
+        <li>Product</li>
+        <li>Testimonials</li>
+        <li>Pricing</li>
+    </ul>
+    <ul>
+        <li>Team</li>
+        <li>Contact Us</li>
+    </ul>
+</nav>
+<!-- OR -->
+<nav>
+    <ul>
+        <li>Product</li>
+        <li>Testimonials</li>
+        <li>Pricing</li>
+        <li>Team</li>
+        <li>Contact Us</li>
+    </ul>
+</nav>
+
+Challenge 02
+----
+
+Order the CSS selectors by specificity (lowest to highest)
+
+A --> div h1.large-text::before
+B --> div h1:first-child
+C --> h1:not(.small-text)
+D --> .large-text:nth-child(1)
+E --> h1.large-text[id="title"]
+F --> h1.large-text#title
+
+<!-- FEDABC -->
+
+<!-- CSS Challenges end -->
