@@ -31,15 +31,15 @@ Higher specificity wins.
 
 ## SCSS (Sass)
 
-### Q6: What are the benefits of using SCSS over regular CSS?
+### Q1: What are the benefits of using SCSS over regular CSS?
 **A:** SCSS offers variables, nesting, mixins, functions, partials, and inheritance, making stylesheets more maintainable, reusable, and scalable.
 
-### Q7: How do you manage global styles in a large project?
+### Q2: How do you manage global styles in a large project?
 **A:** Use partials (files starting with `_`) to organize styles into modules (e.g., `_variables.scss`, `_mixins.scss`, `_buttons.scss`). Import them in a main file using `@import`.
 
 ## JavaScript
 
-### Q8: Explain closures and their use cases.
+### Q1: Explain closures and their use cases.
 **A:** A closure is a function that has access to its outer function's scope even after the outer function has returned. Useful for data privacy, callbacks, and creating private variables.
 
 Example:
@@ -56,7 +56,7 @@ console.log(counter()); // 1
 console.log(counter()); // 2
 ```
 
-### Q9: What is event delegation and why is it useful?
+### Q2: What is event delegation and why is it useful?
 **A:** Event delegation attaches a single event listener to a parent element instead of individual child elements. It reduces memory usage and simplifies dynamic content handling.
 
 Example:
@@ -68,7 +68,7 @@ document.getElementById('parent').addEventListener('click', function(e) {
 });
 ```
 
-### Q10: Explain the difference between `==` and `===`.
+### Q3: Explain the difference between `==` and `===`.
 **A:** `==` performs type coercion before comparison, while `===` checks both value and type. Always prefer `===` to avoid unexpected behavior.
 
 Example:
@@ -77,7 +77,7 @@ console.log(1 == '1'); // true (type coercion)
 console.log(1 === '1'); // false (different types)
 ```
 
-### Q11: What are promises and how do they work?
+### Q4: What are promises and how do they work?
 **A:** Promises represent the eventual completion (or failure) of an asynchronous operation. They have three states: pending, fulfilled, rejected.
 
 Example:
@@ -88,12 +88,63 @@ fetch('/api/data')
   .catch(error => console.error(error));
 ```
 
+### Q5: Explain async/await and how it differs from promises.
+**A:** Async/await is syntactic sugar built on top of promises that allows writing asynchronous code that looks synchronous. The `async` keyword marks a function as asynchronous, and `await` pauses execution until the promise settles.
+
+Example:
+```javascript
+async function fetchData() {
+  try {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+```
+
+### Q6: What is the JavaScript event loop and how does it work?
+**A:** The event loop is a single-threaded mechanism that monitors the call stack and callback queue. When the call stack is empty, it moves callbacks from the queue to the stack for execution. This enables non-blocking I/O operations despite JavaScript being single-threaded.
+
+Example:
+```javascript
+console.log('Start');
+setTimeout(() => console.log('Timeout'), 0);
+Promise.resolve().then(() => console.log('Promise'));
+console.log('End');
+
+// Output:
+// Start
+// End
+// Promise
+// Timeout
+```
+
+### Q7: Explain event propagation in JavaScript.
+**A:** Event propagation describes how events travel through the DOM tree. There are two phases:
+- Capturing phase: Event travels from window to target's parent
+- Bubbling phase: Event bubbles up from target to window
+
+Methods to control propagation:
+- `event.stopPropagation()` - Stops propagation
+- `event.stopImmediatePropagation()` - Stops propagation and prevents other listeners
+- `event.preventDefault()` - Prevents default behavior
+
+Example:
+```javascript
+// Capturing
+document.getElementById('parent').addEventListener('click', handler, true);
+// Bubbling
+document.getElementById('child').addEventListener('click', handler, false);
+```
+
 ## TypeScript
 
-### Q12: What are the advantages of using TypeScript?
+### Q1: What are the advantages of using TypeScript?
 **A:** TypeScript adds static typing, interfaces, enums, generics, and better tooling support. It catches errors at compile time, improves code documentation, and enhances developer productivity.
 
-### Q13: Explain TypeScript interfaces vs. types.
+### Q2: Explain TypeScript interfaces vs. types.
 **A:** Interfaces are extensible and can be re-opened to add new properties. Types are not extensible but can be used for unions, intersections, and primitives.
 
 Example:
@@ -106,7 +157,7 @@ interface User {
 type UserStatus = 'active' | 'inactive';
 ```
 
-### Q14: How do you handle optional parameters in TypeScript?
+### Q3: How do you handle optional parameters in TypeScript?
 **A:** Use the question mark (`?`) after the parameter name.
 
 Example:
@@ -116,12 +167,56 @@ function greet(name: string, greeting?: string): void {
 }
 ```
 
+### Q4: How do you type backend API integrations in TypeScript?
+**A:** Typing backend APIs involves defining interfaces for request/response payloads and using them with fetch methods or HTTP clients.
+
+Example:
+```typescript
+// Define API response types
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message: string;
+}
+
+// Typing a fetch call
+async function fetchUser(id: number): Promise<User> {
+  const response = await fetch(`/api/users/${id}`);
+  const userData: ApiResponse<User> = await response.json();
+  return userData.data;
+}
+
+// Typing POST request
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  age?: number;
+}
+
+async function createUser(user: CreateUserRequest): Promise<User> {
+  const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(user),
+  });
+  return response.json();
+}
+```
+
 ## Vue.js
 
-### Q15: Explain Vue's reactivity system.
+### Q1: Explain Vue's reactivity system.
 **A:** Vue 3 uses Proxies to make data reactive, replacing the getter/setter approach of Vue 2. This enables more efficient tracking of property access and allows reactivity on objects, arrays, and primitive values without limitations. The system tracks dependencies during template rendering and updates the DOM when data changes.
 
-### Q16: What are Vue components and how do you create them?
+### Q2: What are Vue components and how do you create them?
 **A:** Components are reusable UI elements with their own templates, logic, and styles. With Vue 3, you can create components using Options API or Composition API:
 
 Options API:
@@ -166,7 +261,7 @@ const handleClick = () => {
 </script>
 ```
 
-### Q17: Explain Vue's Composition API and its advantages over Options API.
+### Q3: Explain Vue's Composition API and its advantages over Options API.
 **A:** Composition API allows organizing component logic by concerns rather than options. Key advantages include:
 - Better logic reuse with composable functions
 - Improved type inference with TypeScript
@@ -187,7 +282,7 @@ onMounted(() => {
 </script>
 ```
 
-### Q18: What are Vue's lifecycle hooks in Composition API?
+### Q4: What are Vue's lifecycle hooks in Composition API?
 **A:** In Composition API, lifecycle hooks are imported as functions:
 - `onBeforeMount`: Before mounting
 - `onMounted`: After mounting
@@ -199,7 +294,7 @@ onMounted(() => {
 - `onActivated`: When component activated (inside keep-alive)
 - `onDeactivated`: When component deactivated
 
-### Q19: How do you handle state management in Vue 3?
+### Q5: How do you handle state management in Vue 3?
 **A:** Vue 3 offers multiple approaches:
 - Pinia: Official recommended state management solution, simpler than Vuex with better TypeScript support
 - Provide/Inject: For component tree communication
@@ -229,7 +324,7 @@ export const useUserStore = defineStore('user', {
 });
 ```
 
-### Q20: What are Vue's new features in recent versions?
+### Q6: What are Vue's new features in recent versions?
 **A:** Recent Vue versions introduced:
 - Composition API: Better logic organization and reuse
 - Teleport: Render content in different parts of DOM
@@ -250,7 +345,7 @@ Example of Teleport:
 </template>
 ```
 
-### Q21: How do you handle form validation in Vue 3?
+### Q7: How do you handle form validation in Vue 3?
 **A:** Use Composition API with refs and computed values or third-party libraries like VeeValidate:
 
 ```vue
@@ -278,7 +373,7 @@ const isValid = computed(() => Object.keys(errors.value).length === 0);
 
 ## Nuxt.js
 
-### Q22: What is Nuxt.js and how does it differ from Vue.js?
+### Q1: What is Nuxt.js and how does it differ from Vue.js?
 **A:** Nuxt.js is a framework built on top of Vue.js that provides server-side rendering (SSR), static site generation (SSG), routing, and modular architecture out of the box. Nuxt 3 introduces several improvements over Nuxt 2:
 - Nitro engine for universal deployment
 - Native ES module support
@@ -286,7 +381,7 @@ const isValid = computed(() => Object.keys(errors.value).length === 0);
 - Built-in TypeScript support
 - Faster development startup with Vite or Webpack 5
 
-### Q23: Explain Nuxt's page-based routing.
+### Q2: Explain Nuxt's page-based routing.
 **A:** Nuxt automatically generates routes based on the file structure in the `pages/` directory. Each `.vue` file becomes a route. Nuxt 3 supports:
 - Dynamic routes with `[slug]` syntax
 - Nested routes with parent-child relationships
@@ -305,7 +400,7 @@ pages/
   [...all].vue       -> /any/unmatched/route
 ```
 
-### Q24: What are Nuxt's middleware and how do you use them?
+### Q3: What are Nuxt's middleware and how do you use them?
 **A:** Middleware runs before entering a route. Define it in `middleware/` directory or inline in a page/component. Nuxt 3 supports named and anonymous middleware:
 
 Named middleware (`middleware/auth.global.js`):
@@ -327,7 +422,7 @@ definePageMeta({
 </script>
 ```
 
-### Q25: How does Nuxt handle SSR and SSG in Nuxt 3?
+### Q4: How does Nuxt handle SSR and SSG in Nuxt 3?
 **A:** Nuxt 3 uses the Nitro server engine which provides:
 - Universal rendering (SSR, SSG, CSR)
 - Server routes for API endpoints
@@ -348,7 +443,7 @@ export default defineNuxtConfig({
 });
 ```
 
-### Q26: Explain Nuxt's composables and how they differ from Vue's composables.
+### Q5: Explain Nuxt's composables and how they differ from Vue's composables.
 **A:** Nuxt 3 introduces auto-imported composables that work seamlessly on both client and server:
 - `useAsyncData`: Fetch data with automatic de-duplication
 - `useFetch`: Simplified data fetching with caching
@@ -366,7 +461,7 @@ const { data: posts, pending, error } = await useAsyncData('posts', async () => 
 </script>
 ```
 
-### Q27: What are Nuxt modules and how do you create them?
+### Q6: What are Nuxt modules and how do you create them?
 **A:** Nuxt modules extend Nuxt's functionality and can modify its configuration. Create a module by exporting a function:
 
 Module example (`modules/my-module.ts`):
@@ -394,7 +489,7 @@ export default defineNuxtConfig({
 });
 ```
 
-### Q28: How do you optimize performance in Nuxt 3?
+### Q7: How do you optimize performance in Nuxt 3?
 **A:** Nuxt 3 offers several performance optimizations:
 - Automatic code splitting and lazy loading
 - Static asset optimization
