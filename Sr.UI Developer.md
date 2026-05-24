@@ -780,6 +780,348 @@ const isValid = computed(() => Object.keys(errors.value).length === 0);
 </script>
 ```
 
+### Q8: How do you implement API calls in Vue 3 using Composition API?
+**A:** Create reusable composables for API calls that handle loading states, errors, and caching. Use `fetch` or libraries like Axios:
+
+**Basic API Composable:**
+```javascript
+// composables/useApi.js
+import { ref } from 'vue';
+
+export function useApi() {
+  const loading = ref(false);
+  const error = ref(null);
+
+  const fetchData = async (url, options = {}) => {
+    loading.value = true;
+    error.value = null;
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        ...options
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      error.value = err.message;
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  return { loading, error, fetchData };
+}
+```
+
+**Using the Composable in a Component:**
+```vue
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useApi } from '@/composables/useApi';
+
+const { loading, error, fetchData } = useApi();
+const users = ref([]);
+
+onMounted(async () => {
+  try {
+    users.value = await fetchData('/api/users');
+  } catch (err) {
+    console.error('Failed to fetch users:', err);
+  }
+});
+</script>
+
+<template>
+  <div v-if="loading">Loading...</div>
+  <div v-else-if="error">{{ error }}</div>
+  <ul v-else>
+    <li v-for="user in users" :key="user.id">{{ user.name }}</li>
+  </ul>
+</template>
+```
+
+### Q9: How do you handle authentication and token management in Vue 3?
+**A:** Store tokens securely and automatically attach them to API requests. Use interceptors with Axios or custom fetch wrappers:
+
+**Auth Composable:**
+```javascript
+// composables/useAuth.js
+import { ref, computed } from 'vue';
+
+export function useAuth() {
+  const token = ref(localStorage.getItem('token') || null);
+  const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
+
+  const isAuthenticated = computed(() => !!token.value);
+
+  const login = async (credentials) => {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
+    });
+    
+    const data = await response.json();
+    token.value = data.token;
+    user.value = data.user;
+    
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+  };
+
+  const logout = () => {
+    token.value = null;
+    user.value = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  };
+
+  const getAuthHeaders = () => ({
+    Authorization: token.value ? `Bearer ${token.value}` : ''
+  });
+
+  return { 
+    token, 
+    user, 
+    isAuthenticated, 
+    login, 
+    logout, 
+    getAuthHeaders 
+  };
+}
+```
+
+**API Service with Auth Interceptor:**
+```javascript
+// services/api.js
+import { useAuth } from '@/composables/useAuth';
+
+class ApiService {
+  constructor(baseURL) {
+    this.baseURL = baseURL;
+  }
+
+  async request(endpoint, options = {}) {
+    const { getAuthHeaders } = useAuth();
+    
+    const url = `${this.baseURL}${endpoint}`;
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+        ...options.headers
+      },
+      ...options
+    };
+
+    const response = await fetch(url, config);
+    
+    if (response.status === 401) {
+      // Handle unauthorized - redirect to login
+      window.location.href = '/login';
+    }
+    
+    return response.json();
+  }
+
+  get(endpoint) {
+    return this.request(endpoint, { method: 'GET' });
+  }
+
+  post(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  put(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
+  delete(endpoint) {
+    return this.request(endpoint, { method: 'DELETE' });
+  }
+}
+
+export const apiService = new ApiService('/api');
+```
+
+### Q10: How do you implement error handling and retry logic for API calls?
+**A:** Implement retry mechanisms with exponential backoff and proper error categorization:
+
+**Retry Logic Composable:**
+```javascript
+// composables/useFetchWithRetry.js
+import { ref } from 'vue';
+
+export function useFetchWithRetry(maxRetries = 3, baseDelay = 1000) {
+  const loading = ref(false);
+  const error = ref(null);
+  const retries = ref(0);
+
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const shouldRetry = (err) => {
+    // Retry on network errors or 5xx server errors
+    return err instanceof TypeError || 
+           (err.status >= 500 && err.status < 600);
+  };
+
+  const executeWithRetry = async (fn) => {
+    loading.value = true;
+    error.value = null;
+    retries.value = 0;
+
+    while (retries.value <= maxRetries) {
+      try {
+        const result = await fn();
+        return result;
+      } catch (err) {
+        error.value = err;
+        
+        if (!shouldRetry(err) || retries.value >= maxRetries) {
+          throw err;
+        }
+
+        // Exponential backoff
+        const delay = baseDelay * Math.pow(2, retries.value);
+        await sleep(delay);
+        retries.value++;
+      }
+    }
+  };
+
+  return { loading, error, retries, executeWithRetry };
+}
+```
+
+**Usage Example:**
+```vue
+<script setup>
+import { ref } from 'vue';
+import { useFetchWithRetry } from '@/composables/useFetchWithRetry';
+
+const { loading, error, executeWithRetry } = useFetchWithRetry(3, 1000);
+const data = ref(null);
+
+const fetchData = async () => {
+  try {
+    data.value = await executeWithRetry(() => 
+      fetch('/api/data').then(res => res.json())
+    );
+  } catch (err) {
+    console.error('All retries failed:', err);
+  }
+};
+</script>
+```
+
+### Q11: How do you implement pagination and infinite scrolling with API calls?
+**A:** Manage page state and load more data as users scroll:
+
+**Pagination Composable:**
+```javascript
+// composables/usePagination.js
+import { ref, computed } from 'vue';
+
+export function usePagination(fetchFunction, itemsPerPage = 10) {
+  const items = ref([]);
+  const currentPage = ref(1);
+  const totalPages = ref(0);
+  const loading = ref(false);
+  const hasMore = computed(() => currentPage.value < totalPages.value);
+
+  const fetchPage = async (page) => {
+    loading.value = true;
+    try {
+      const response = await fetchFunction(page, itemsPerPage);
+      items.value = page === 1 ? response.data : [...items.value, ...response.data];
+      totalPages.value = response.totalPages;
+      currentPage.value = page;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const loadNextPage = async () => {
+    if (hasMore.value && !loading.value) {
+      await fetchPage(currentPage.value + 1);
+    }
+  };
+
+  const reset = () => {
+    items.value = [];
+    currentPage.value = 1;
+    totalPages.value = 0;
+  };
+
+  return {
+    items,
+    currentPage,
+    totalPages,
+    loading,
+    hasMore,
+    fetchPage,
+    loadNextPage,
+    reset
+  };
+}
+```
+
+**Component Implementation:**
+```vue
+<script setup>
+import { onMounted, onUnmounted } from 'vue';
+import { usePagination } from '@/composables/usePagination';
+
+const fetchPosts = (page, limit) => 
+  fetch(`/api/posts?page=${page}&limit=${limit}`).then(res => res.json());
+
+const { items, loading, hasMore, loadNextPage, reset } = usePagination(fetchPosts, 10);
+
+const handleScroll = () => {
+  const bottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+  if (bottom && hasMore.value && !loading.value) {
+    loadNextPage();
+  }
+};
+
+onMounted(() => {
+  reset();
+  window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+</script>
+
+<template>
+  <div class="posts">
+    <article v-for="post in items" :key="post.id">
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.excerpt }}</p>
+    </article>
+    <div v-if="loading" class="loader">Loading more...</div>
+    <div v-else-if="!hasMore" class="end-message">No more posts</div>
+  </div>
+</template>
+```
+
 
 ## Nuxt.js
 
@@ -913,6 +1255,463 @@ Example of image optimization:
 <template>
   <NuxtImg src="/hero.jpg" width="800" height="400" alt="Hero" />
 </template>
+```
+
+### Q8: How do you implement API calls in Nuxt 3 using useFetch and useAsyncData?
+**A:** Nuxt 3 provides powerful composables for data fetching with built-in caching, deduplication, and SSR support:
+
+**Basic useFetch Example:**
+```vue
+<script setup>
+const { data: users, pending, error, refresh } = await useFetch('/api/users', {
+  method: 'GET',
+  lazy: true, // Don't block navigation
+  server: true, // Fetch on server side
+  watch: [/* reactive dependencies */],
+  transform: (data) => data.map(user => ({
+    id: user.id,
+    name: user.name,
+    email: user.email
+  }))
+});
+</script>
+
+<template>
+  <div v-if="pending">Loading users...</div>
+  <div v-else-if="error">Error: {{ error.message }}</div>
+  <ul v-else>
+    <li v-for="user in users" :key="user.id">{{ user.name }}</li>
+  </ul>
+  <button @click="refresh">Refresh</button>
+</template>
+```
+
+**useAsyncData for Complex Data Fetching:**
+```vue
+<script setup>
+const { data: dashboard, pending, error } = await useAsyncData(
+  'dashboard-data', // Unique key for caching
+  async () => {
+    const [users, posts, stats] = await Promise.all([
+      $fetch('/api/users'),
+      $fetch('/api/posts'),
+      $fetch('/api/stats')
+    ]);
+    
+    return {
+      users: users.data,
+      posts: posts.data,
+      stats: stats.data
+    };
+  },
+  {
+    transform: (data) => ({
+      ...data,
+      totalUsers: data.users.length,
+      recentPosts: data.posts.slice(0, 5)
+    })
+  }
+);
+</script>
+```
+
+### Q9: How do you create API routes in Nuxt 3 using the server directory?
+**A:** Nuxt 3 allows creating backend API endpoints in the `server/api/` directory using Nitro:
+
+**Simple GET Endpoint:**
+```typescript
+// server/api/users.get.ts
+export default defineEventHandler(async (event) => {
+  const users = await db.users.findMany();
+  return {
+    success: true,
+    data: users
+  };
+});
+```
+
+**POST Endpoint with Validation:**
+```typescript
+// server/api/users.post.ts
+import { z } from 'zod';
+
+const userSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  age: z.number().min(18).optional()
+});
+
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  
+  try {
+    const validatedData = userSchema.parse(body);
+    const newUser = await db.users.create({ data: validatedData });
+    
+    setResponseStatus(event, 201);
+    return {
+      success: true,
+      data: newUser
+    };
+  } catch (error) {
+    setResponseStatus(event, 400);
+    return {
+      success: false,
+      error: error.errors
+    };
+  }
+});
+```
+
+**Dynamic Route Parameters:**
+```typescript
+// server/api/users/[id].get.ts
+export default defineEventHandler(async (event) => {
+  const id = getRouterParam(event, 'id');
+  const user = await db.users.findUnique({ where: { id: Number(id) } });
+  
+  if (!user) {
+    throw createError({
+      statusCode: 404,
+      message: 'User not found'
+    });
+  }
+  
+  return user;
+});
+```
+
+### Q10: How do you handle authentication and protected API routes in Nuxt 3?
+**A:** Implement authentication middleware and session management:
+
+**Authentication Middleware:**
+```typescript
+// middleware/auth.global.ts
+export default defineNuxtRouteMiddleware(async (to) => {
+  const session = useCookie('session');
+  
+  if (!session.value) {
+    return navigateTo('/login');
+  }
+  
+  // Verify session validity
+  try {
+    const user = await $fetch('/api/auth/verify', {
+      headers: {
+        Authorization: `Bearer ${session.value}`
+      }
+    });
+    
+    // Attach user to context
+    useState('user').value = user;
+  } catch (error) {
+    // Clear invalid session
+    session.value = null;
+    return navigateTo('/login');
+  }
+});
+```
+
+**Protected API Endpoint:**
+```typescript
+// server/api/profile.get.ts
+export default defineEventHandler(async (event) => {
+  const authHeader = getHeader(event, 'authorization');
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw createError({
+      statusCode: 401,
+      message: 'Unauthorized'
+    });
+  }
+  
+  const token = authHeader.split(' ')[1];
+  const user = await verifyToken(token);
+  
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      message: 'Invalid token'
+    });
+  }
+  
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email
+  };
+});
+```
+
+**Login Composable:**
+```typescript
+// composables/useAuth.ts
+export const useAuth = () => {
+  const session = useCookie('session');
+  const user = useState('user');
+
+  const login = async (credentials: { email: string; password: string }) => {
+    const response = await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: credentials
+    });
+    
+    session.value = response.token;
+    user.value = response.user;
+    
+    return response;
+  };
+
+  const logout = () => {
+    session.value = null;
+    user.value = null;
+    navigateTo('/login');
+  };
+
+  return {
+    user,
+    isAuthenticated: computed(() => !!user.value),
+    login,
+    logout
+  };
+};
+```
+
+### Q11: How do you implement error handling and retry logic in Nuxt 3 API calls?
+**A:** Use Nuxt's built-in error handling with custom retry strategies:
+
+**Global Error Handler:**
+```typescript
+// plugins/error-handler.ts
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.hook('vue:error', (error, instance, info) => {
+    console.error('Vue Error:', error, info);
+    // Send to error tracking service
+  });
+  
+  nuxtApp.hook('app:error', (error) => {
+    console.error('App Error:', error);
+    // Show user-friendly error message
+  });
+});
+```
+
+**Custom Fetch with Retry:**
+```typescript
+// composables/useFetchWithRetry.ts
+export const useFetchWithRetry = (url: string, options: any = {}, maxRetries = 3) => {
+  const attempts = ref(0);
+  
+  const executeFetch = async () => {
+    try {
+      return await useFetch(url, {
+        ...options,
+        onResponse({ response }) {
+          if (response.status >= 500 && attempts.value < maxRetries) {
+            attempts.value++;
+            throw new Error(`Server error, retrying... (${attempts.value}/${maxRetries})`);
+          }
+        }
+      });
+    } catch (error) {
+      if (attempts.value < maxRetries) {
+        // Exponential backoff
+        const delay = Math.pow(2, attempts.value) * 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return executeFetch();
+      }
+      throw error;
+    }
+  };
+  
+  return executeFetch();
+};
+```
+
+**Usage in Component:**
+```vue
+<script setup>
+const { data, error, pending } = await useFetchWithRetry(
+  '/api/critical-data',
+  { method: 'GET' },
+  3 // Max retries
+);
+</script>
+
+<template>
+  <div v-if="pending">Loading...</div>
+  <div v-else-if="error" class="error-state">
+    <p>Failed to load data after multiple attempts</p>
+    <button @click="$router.go(0)">Try Again</button>
+  </div>
+  <div v-else>
+    <!-- Display data -->
+  </div>
+</template>
+```
+
+### Q12: How do you implement real-time updates with WebSockets in Nuxt 3?
+**A:** Use WebSocket connections for real-time data updates:
+
+**WebSocket Composable:**
+```typescript
+// composables/useWebSocket.ts
+export const useWebSocket = (url: string) => {
+  const ws = ref<WebSocket | null>(null);
+  const messages = ref<any[]>([]);
+  const isConnected = ref(false);
+  
+  const connect = () => {
+    ws.value = new WebSocket(url);
+    
+    ws.value.onopen = () => {
+      isConnected.value = true;
+      console.log('WebSocket connected');
+    };
+    
+    ws.value.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      messages.value.push(data);
+    };
+    
+    ws.value.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      isConnected.value = false;
+    };
+    
+    ws.value.onclose = () => {
+      isConnected.value = false;
+      // Attempt reconnection after 5 seconds
+      setTimeout(connect, 5000);
+    };
+  };
+  
+  const sendMessage = (data: any) => {
+    if (ws.value && isConnected.value) {
+      ws.value.send(JSON.stringify(data));
+    }
+  };
+  
+  const disconnect = () => {
+    if (ws.value) {
+      ws.value.close();
+    }
+  };
+  
+  onMounted(connect);
+  onUnmounted(disconnect);
+  
+  return {
+    messages,
+    isConnected,
+    sendMessage,
+    disconnect
+  };
+};
+```
+
+**Real-time Component:**
+```vue
+<script setup>
+const { messages, isConnected, sendMessage } = useWebSocket('wss://api.example.com/updates');
+
+const sendNotification = () => {
+  sendMessage({ type: 'notification', content: 'Hello!' });
+};
+</script>
+
+<template>
+  <div>
+    <span :class="{ online: isConnected }">
+      {{ isConnected ? 'Connected' : 'Disconnected' }}
+    </span>
+    
+    <div v-for="(msg, index) in messages" :key="index">
+      {{ msg.content }}
+    </div>
+    
+    <button @click="sendNotification" :disabled="!isConnected">
+      Send Notification
+    </button>
+  </div>
+</template>
+```
+
+### Q13: How do you implement caching strategies for API responses in Nuxt 3?
+**A:** Leverage Nuxt's built-in caching with custom strategies:
+
+**Client-Side Caching with SWR (Stale While Revalidate):**
+```vue
+<script setup>
+const { data, refresh } = await useFetch('/api/products', {
+  key: 'products-list',
+  lazy: true,
+  server: false, // Client-side only
+  getCachedData(key) {
+    // Return cached data immediately
+    const cached = useNuxtData(key).data.value;
+    return cached;
+  },
+  // Refresh in background
+  watch: [/* dependencies */]
+});
+
+// Manual refresh when needed
+const forceRefresh = async () => {
+  await refresh();
+};
+</script>
+```
+
+**Server-Side Caching with Route Rules:**
+```typescript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  routeRules: {
+    // Cache API responses for 1 hour
+    '/api/products/**': {
+      cache: {
+        maxAge: 3600,
+        staleMaxAge: 86400, // Serve stale for 24 hours
+        headersOnly: true
+      }
+    },
+    // Cache static pages for 1 day
+    '/blog/**': {
+      static: true,
+      cache: {
+        maxAge: 86400
+      }
+    }
+  }
+});
+```
+
+**Custom Cache Implementation:**
+```typescript
+// composables/useCachedFetch.ts
+const cache = new Map();
+
+export const useCachedFetch = async (url: string, ttl = 300000) => {
+  const now = Date.now();
+  const cached = cache.get(url);
+  
+  // Return cached data if still valid
+  if (cached && (now - cached.timestamp) < ttl) {
+    return cached.data;
+  }
+  
+  // Fetch fresh data
+  const response = await $fetch(url);
+  
+  // Update cache
+  cache.set(url, {
+    data: response,
+    timestamp: now
+  });
+  
+  return response;
+};
 ```
 
 
