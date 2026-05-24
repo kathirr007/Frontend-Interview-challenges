@@ -437,7 +437,57 @@ console.log(1 == '1'); // true (type coercion)
 console.log(1 === '1'); // false (different types)
 ```
 
-### Q4: What are promises and how do they work?
+### Q4: What is the difference between arrow functions and regular functions?
+**A:** Arrow functions (`=>`) and regular functions have several key differences:
+
+1. **`this` binding**: Arrow functions don't have their own `this` context; they inherit it from the enclosing scope. Regular functions have their own `this` based on how they're called.
+2. **`arguments` object**: Arrow functions don't have access to the `arguments` object.
+3. **Cannot be used as constructors**: Arrow functions cannot be instantiated with `new`.
+4. **No `prototype` property**: Arrow functions don't have a prototype property.
+5. **Syntax**: Arrow functions have a more concise syntax.
+
+Example:
+```javascript
+// Regular function - has its own 'this'
+function Person() {
+  this.age = 0;
+  
+  setInterval(function growUp() {
+    // In non-strict mode, growUp() defines 'this' as the global object
+    this.age++; // Doesn't work as expected
+  }, 1000);
+}
+
+// Arrow function - inherits 'this' from enclosing scope
+function Person() {
+  this.age = 0;
+  
+  setInterval(() => {
+    // 'this' refers to the Person instance
+    this.age++; // Works correctly
+  }, 1000);
+}
+
+// Cannot use arrow function as constructor
+const MyFunc = () => {};
+const obj = new MyFunc(); // TypeError: MyFunc is not a constructor
+
+// No arguments object in arrow functions
+function regularFunc() {
+  console.log(arguments); // [Arguments] { '0': 1, '1': 2 }
+}
+
+const arrowFunc = () => {
+  console.log(arguments); // ReferenceError: arguments is not defined
+};
+
+regularFunc(1, 2);
+arrowFunc(1, 2);
+```
+
+Use arrow functions for callbacks and when you need lexical `this` binding. Use regular functions for methods, constructors, or when you need dynamic `this`.
+
+### Q5: What are promises and how do they work?
 **A:** Promises represent the eventual completion (or failure) of an asynchronous operation. They have three states: pending, fulfilled, rejected.
 
 Example:
@@ -448,7 +498,7 @@ fetch('/api/data')
   .catch(error => console.error(error));
 ```
 
-### Q5: Explain async/await and how it differs from promises.
+### Q6: Explain async/await and how it differs from promises.
 **A:** Async/await is syntactic sugar built on top of promises that allows writing asynchronous code that looks synchronous. The `async` keyword marks a function as asynchronous, and `await` pauses execution until the promise settles.
 
 Example:
@@ -464,7 +514,7 @@ async function fetchData() {
 }
 ```
 
-### Q6: What is the JavaScript event loop and how does it work?
+### Q7: What is the JavaScript event loop and how does it work?
 **A:** The event loop is a single-threaded mechanism that monitors the call stack and callback queue. When the call stack is empty, it moves callbacks from the queue to the stack for execution. This enables non-blocking I/O operations despite JavaScript being single-threaded.
 
 Example:
@@ -481,7 +531,7 @@ console.log('End');
 // Timeout
 ```
 
-### Q7: Explain event propagation in JavaScript.
+### Q8: Explain event propagation in JavaScript.
 **A:** Event propagation describes how events travel through the DOM tree. There are two phases:
 - Capturing phase: Event travels from window to target's parent
 - Bubbling phase: Event bubbles up from target to window
