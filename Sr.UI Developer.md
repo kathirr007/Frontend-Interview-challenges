@@ -29,6 +29,143 @@ Higher specificity wins.
 ### Q5: How do you handle cross-browser compatibility issues?
 **A:** Use feature detection (e.g., Modernizr), polyfills, vendor prefixes, and tools like Autoprefixer. Test thoroughly across target browsers and use browser support tables (e.g., Can I Use).
 
+### Q6: What is the difference between inline, inline-block, and block elements?
+**A:** 
+- **Block elements** (`div`, `p`, `h1-h6`): Take full width, start on a new line, can have width/height set.
+- **Inline elements** (`span`, `a`, `strong`): Only take necessary width, don't start on new line, cannot set width/height.
+- **Inline-block elements**: Behave like inline but allow width/height settings and respect margin/padding.
+
+### Q7: Explain the difference between `position: relative`, `absolute`, `fixed`, and `sticky`.
+**A:**
+- **relative**: Positioned relative to its normal position. Other elements flow as if it were in normal position.
+- **absolute**: Positioned relative to the nearest positioned ancestor (not static). Removed from document flow.
+- **fixed**: Positioned relative to viewport. Stays in place during scrolling.
+- **sticky**: Toggles between relative and fixed based on scroll position. Becomes fixed when reaching a specified threshold.
+
+### Q8: What are CSS custom properties (variables) and how do you use them?
+**A:** CSS variables store reusable values using `--variable-name` syntax and accessed with `var(--variable-name)`. They cascade and can be updated dynamically with JavaScript.
+
+Example:
+```css
+:root {
+  --primary-color: #3498db;
+  --spacing: 1rem;
+}
+
+.button {
+  background-color: var(--primary-color);
+  padding: var(--spacing);
+}
+```
+
+### Q9: Explain Flexbox and when to use it vs. CSS Grid.
+**A:** 
+- **Flexbox**: One-dimensional layout system (row OR column). Best for aligning items in a single direction, distributing space, and handling dynamic content.
+- **CSS Grid**: Two-dimensional layout system (rows AND columns). Best for complex page layouts, precise positioning, and grid-based designs.
+
+Use Flexbox for components and Grid for overall page layout.
+
+### Q10: What is the Critical Rendering Path and how do you optimize it?
+**A:** The CRP is the sequence of steps the browser takes to convert HTML, CSS, and JavaScript into pixels on screen. Optimization strategies:
+- Minimize CSS blocking (inline critical CSS)
+- Defer non-critical JavaScript
+- Optimize image loading (lazy loading, proper formats)
+- Reduce render-blocking resources
+- Use efficient CSS selectors
+
+### Q11: How do you center an element both horizontally and vertically?
+**A:** Multiple approaches:
+
+**Flexbox:**
+```css
+.parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+```
+
+**Grid:**
+```css
+.parent {
+  display: grid;
+  place-items: center;
+}
+```
+
+**Position + Transform:**
+```css
+.child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+### Q12: What are pseudo-classes and pseudo-elements? Provide examples.
+**A:**
+- **Pseudo-classes** select elements in specific states: `:hover`, `:focus`, `:nth-child()`, `:first-child`, `:last-child`, `:not()`, `:disabled`
+- **Pseudo-elements** style specific parts of elements: `::before`, `::after`, `::first-line`, `::first-letter`, `::placeholder`
+
+Example:
+```css
+/* Pseudo-class */
+button:hover {
+  background-color: blue;
+}
+
+/* Pseudo-element */
+p::first-letter {
+  font-size: 2em;
+  font-weight: bold;
+}
+```
+
+### Q13: Explain CSS containment and its performance benefits.
+**A:** CSS `contain` property tells the browser to isolate an element's subtree for optimization:
+- `layout`: Element's layout doesn't affect outside elements
+- `style`: Styles won't leak out
+- `paint`: Element won't paint outside bounds
+- `size`: Element's size won't change
+
+Example:
+```css
+.card {
+  contain: layout style paint;
+}
+```
+
+This improves rendering performance by limiting what the browser needs to recalculate.
+
+### Q14: What is the difference between `em`, `rem`, `vh`, and `vw` units?
+**A:**
+- **em**: Relative to parent element's font-size
+- **rem**: Relative to root element's font-size (html)
+- **vh**: 1% of viewport height
+- **vw**: 1% of viewport width
+
+Use `rem` for consistent sizing, `em` for component-relative sizing, and viewport units for responsive designs.
+
+### Q15: How do you create accessible forms?
+**A:** Best practices:
+- Use proper `<label>` elements associated with inputs via `for` attribute
+- Add `aria-label` or `aria-labelledby` when labels aren't visible
+- Include `required` and validation attributes
+- Provide clear error messages
+- Ensure keyboard navigation works
+- Use appropriate input types (`email`, `tel`, `number`)
+- Group related fields with `<fieldset>` and `<legend>`
+
+Example:
+```html
+<form>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required aria-describedby="email-error">
+  <span id="email-error" role="alert"></span>
+</form>
+```
+
 ## SCSS (Sass)
 
 ### Q1: What are the benefits of using SCSS over regular CSS?
@@ -36,6 +173,229 @@ Higher specificity wins.
 
 ### Q2: How do you manage global styles in a large project?
 **A:** Use partials (files starting with `_`) to organize styles into modules (e.g., `_variables.scss`, `_mixins.scss`, `_buttons.scss`). Import them in a main file using `@import`.
+
+### Q3: What is the difference between `@extend` and `@mixin`?
+**A:**
+- **@extend**: Inherits styles from another selector, creating shared classes. Good for similar components.
+- **@mixin**: Reusable code blocks that can accept parameters. Better for complex patterns and flexibility.
+
+Example:
+```scss
+// @extend
+%button-base {
+  padding: 10px 20px;
+  border-radius: 4px;
+}
+
+.primary-button {
+  @extend %button-base;
+  background: blue;
+}
+
+// @mixin
+@mixin button($bg-color, $text-color: white) {
+  padding: 10px 20px;
+  border-radius: 4px;
+  background: $bg-color;
+  color: $text-color;
+}
+
+.btn-primary {
+  @include button(blue);
+}
+```
+
+Prefer `@mixin` for better control and avoid excessive selector chaining with `@extend`.
+
+### Q4: Explain SCSS nesting and its best practices.
+**A:** Nesting allows writing selectors within other selectors, mirroring HTML structure. Best practices:
+- Limit nesting depth to 3 levels maximum
+- Use `&` to reference parent selector
+- Avoid deeply nested selectors (reduces readability)
+- Don't nest media queries unnecessarily
+
+Example:
+```scss
+.navbar {
+  display: flex;
+  
+  &__item {
+    padding: 10px;
+    
+    &:hover {
+      background: gray;
+    }
+    
+    &--active {
+      font-weight: bold;
+    }
+  }
+}
+```
+
+### Q5: What are SCSS maps and how do you use them?
+**A:** Maps store key-value pairs for organized data management. Useful for themes, breakpoints, and configuration.
+
+Example:
+```scss
+$colors: (
+  primary: #3498db,
+  secondary: #2ecc71,
+  danger: #e74c3c
+);
+
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px
+);
+
+@function color($key) {
+  @return map-get($colors, $key);
+}
+
+.button {
+  background: color(primary);
+}
+
+@mixin respond-to($breakpoint) {
+  @media (min-width: map-get($breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+.container {
+  @include respond-to(md) {
+    max-width: 720px;
+  }
+}
+```
+
+### Q6: How do you handle vendor prefixes in SCSS?
+**A:** Use autoprefixer post-processing instead of manual prefixes. If needed manually, create a mixin:
+
+```scss
+@mixin prefix($property, $value, $prefixes: webkit moz ms o) {
+  @each $prefix in $prefixes {
+    #{'-' + $prefix + '-' + $property}: $value;
+  }
+  #{$property}: $value;
+}
+
+.animated {
+  @include prefix(transform, rotate(45deg));
+  @include prefix(transition, all 0.3s ease);
+}
+```
+
+However, modern build tools with Autoprefixer handle this automatically.
+
+### Q7: What is the difference between `@import` and `@use` in modern Sass?
+**A:** 
+- **@import**: Legacy method, imports everything globally, can cause naming conflicts
+- **@use**: Modern approach, creates namespaces, loads files only once, better modularity
+
+Example:
+```scss
+// Old way
+@import 'variables';
+@import 'mixins';
+
+// New way
+@use 'variables' as *;
+@use 'mixins' as m;
+
+.button {
+  background: $primary-color; // From variables
+  @include m.responsive(); // From mixins namespace
+}
+```
+
+`@use` is recommended for better maintainability and avoiding global scope pollution.
+
+### Q8: How do you create a responsive grid system in SCSS?
+**A:** Use loops and calculations to generate grid classes:
+
+```scss
+$grid-columns: 12;
+$gutter: 1rem;
+
+.grid {
+  display: grid;
+  gap: $gutter;
+  grid-template-columns: repeat($grid-columns, 1fr);
+}
+
+@for $i from 1 through $grid-columns {
+  .col-#{$i} {
+    grid-column: span $i;
+  }
+}
+
+// Responsive breakpoints
+@mixin breakpoint($size) {
+  @if $size == sm {
+    @media (min-width: 576px) { @content; }
+  } @else if $size == md {
+    @media (min-width: 768px) { @content; }
+  }
+}
+
+@include breakpoint(md) {
+  .col-md-6 {
+    grid-column: span 6;
+  }
+}
+```
+
+### Q9: Explain BEM methodology and how SCSS supports it.
+**A:** BEM (Block Element Modifier) is a naming convention:
+- **Block**: Standalone component (`.card`)
+- **Element**: Part of a block (`.card__title`)
+- **Modifier**: Variation (`.card--featured`)
+
+SCSS nesting makes BEM easier:
+```scss
+.card {
+  padding: 1rem;
+  
+  &__header {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  &__title {
+    font-size: 1.5rem;
+  }
+  
+  &--featured {
+    border: 2px solid gold;
+  }
+}
+```
+
+Compiles to `.card`, `.card__header`, `.card__title`, `.card--featured`.
+
+### Q10: How do you optimize SCSS compilation performance?
+**A:** Best practices:
+- Use `@use` instead of `@import` to avoid duplicate imports
+- Split code into logical partials
+- Avoid deeply nested selectors (increases complexity)
+- Use placeholder selectors (`%placeholder`) with `@extend` sparingly
+- Implement tree-shaking by only importing needed modules
+- Use Sass compiler caching
+- Minimize function calls in loops
+
+Example structure:
+```
+styles/
+  _variables.scss
+  _mixins.scss
+  _functions.scss
+  components/
+    _buttons.scss
+    _cards.scss
+  main.scss (imports only what's needed)
+```
 
 ## JavaScript
 
