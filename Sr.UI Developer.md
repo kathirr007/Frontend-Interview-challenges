@@ -1715,4 +1715,1267 @@ export const useCachedFetch = async (url: string, ttl = 300000) => {
 ```
 
 
+## AI-Assisted Development
+
+### Q1: How do you use AI coding assistants (e.g., GitHub Copilot, Claude, ChatGPT) in your daily development workflow?
+**A:** AI assistants can be integrated at multiple stages of development:
+- **Code generation**: Scaffolding components, writing boilerplate, generating utility functions
+- **Code review**: Getting second opinions on implementation choices, identifying potential bugs
+- **Refactoring**: Suggesting improvements for readability, performance, or maintainability
+- **Debugging**: Explaining error messages, suggesting fixes, identifying root causes
+- **Documentation**: Generating inline documentation, API docs, and README content
+- **Testing**: Writing unit tests, generating edge case scenarios, creating mock data
+
+Key principle: Use AI as a collaborator, not a replacement for understanding. Always review and validate generated code before committing.
+
+### Q2: What are the best practices for writing effective prompts when using AI for code generation?
+**A:** Effective prompting follows these principles:
+- **Be specific**: Include the framework, language version, and coding style expectations
+- **Provide context**: Share relevant types, interfaces, or existing code patterns
+- **Define constraints**: Mention accessibility requirements, browser support, or performance goals
+- **Iterate**: Refine outputs by providing feedback on what to change
+
+Example of a good prompt:
+```
+Write a Vue 3 composable using Composition API with TypeScript that handles 
+infinite scrolling. It should:
+- Accept a fetch function and page size as parameters
+- Return reactive loading, error, and items state
+- Support reset functionality
+- Use IntersectionObserver instead of scroll events
+- Follow our project's naming convention: use[Feature]
+```
+
+Example of a poor prompt:
+```
+Write infinite scroll code
+```
+
+### Q3: How do you validate and review AI-generated code before integrating it into your project?
+**A:** A structured review process should include:
+
+1. **Correctness check**: Does the code do what was requested? Test edge cases manually.
+2. **Security review**: Check for XSS vulnerabilities, injection risks, exposed secrets, or unsafe data handling.
+3. **Performance audit**: Look for unnecessary re-renders, memory leaks, missing cleanup, or inefficient algorithms.
+4. **Style consistency**: Ensure the code matches project conventions (naming, file structure, patterns).
+5. **Dependency check**: Verify any suggested libraries are maintained, licensed appropriately, and not overly heavy.
+6. **Type safety**: Ensure TypeScript types are correct, not using excessive `any` types.
+7. **Accessibility**: Verify ARIA attributes, keyboard navigation, and semantic HTML.
+
+Example checklist:
+```markdown
+- [ ] No hardcoded values that should be configurable
+- [ ] Error states are handled appropriately
+- [ ] No console.log statements left in
+- [ ] Follows existing component patterns
+- [ ] Types are properly defined (no `any`)
+- [ ] Unit tests cover the generated logic
+```
+
+### Q4: How can AI tools help with writing and maintaining unit tests?
+**A:** AI assists with testing in several ways:
+
+**Generating test cases from existing code:**
+```typescript
+// Given this composable:
+export function useCounter(initial = 0) {
+  const count = ref(initial);
+  const increment = () => count.value++;
+  const decrement = () => count.value--;
+  const reset = () => count.value = initial;
+  return { count, increment, decrement, reset };
+}
+
+// AI can generate comprehensive tests:
+describe('useCounter', () => {
+  it('initializes with default value of 0', () => {
+    const { count } = useCounter();
+    expect(count.value).toBe(0);
+  });
+
+  it('initializes with custom value', () => {
+    const { count } = useCounter(10);
+    expect(count.value).toBe(10);
+  });
+
+  it('increments the count', () => {
+    const { count, increment } = useCounter(0);
+    increment();
+    expect(count.value).toBe(1);
+  });
+
+  it('decrements the count', () => {
+    const { count, decrement } = useCounter(5);
+    decrement();
+    expect(count.value).toBe(4);
+  });
+
+  it('resets to initial value', () => {
+    const { count, increment, reset } = useCounter(3);
+    increment();
+    increment();
+    reset();
+    expect(count.value).toBe(3);
+  });
+});
+```
+
+**Best practices when using AI for tests:**
+- Provide the source code as context so the AI understands the implementation
+- Ask for edge cases and boundary conditions specifically
+- Verify that tests actually assert meaningful behavior, not implementation details
+- Ensure mocks are appropriate and don't hide real bugs
+- Review that test descriptions accurately describe what is being tested
+
+### Q5: What are the limitations and risks of relying on AI for development?
+**A:** Key limitations to be aware of:
+
+1. **Outdated knowledge**: AI models have training cutoffs and may suggest deprecated APIs or older patterns (e.g., Options API instead of Composition API, Vuex instead of Pinia).
+2. **Hallucinated APIs**: AI may invent function names, parameters, or library features that don't exist. Always verify against official documentation.
+3. **Context window limits**: AI may lose track of large codebases, leading to inconsistent suggestions across files.
+4. **Security blind spots**: Generated code may introduce vulnerabilities like unsanitized user input, insecure token storage, or missing CORS configuration.
+5. **Over-engineering**: AI tends to produce verbose solutions; simpler approaches may be better.
+6. **License concerns**: Be aware of potential licensing issues with AI-generated code in commercial projects.
+
+**Mitigation strategies:**
+- Always run linters, type checks, and tests on generated code
+- Cross-reference with official documentation for any unfamiliar APIs
+- Use AI-generated code as a starting point, not a final product
+- Maintain your own understanding of the code — don't commit code you can't explain
+- Establish team guidelines for AI tool usage and review standards
+
+### Q6: How do you use AI to assist with debugging complex UI issues?
+**A:** A systematic approach to AI-assisted debugging:
+
+**Step 1 — Provide rich context:**
+```
+I have a Vue 3 component using Composition API. The dropdown menu 
+closes immediately after opening on iOS Safari. Here's the component 
+code, the CSS, and the event handler. The issue doesn't reproduce 
+on desktop Chrome.
+```
+
+**Step 2 — Share error details and reproduction steps:**
+- Include the exact error message or unexpected behavior
+- Share browser console output
+- Describe what you expected vs. what happened
+- Mention the environment (browser, OS, device)
+
+**Step 3 — Iterate on the solution:**
+- Ask the AI to explain *why* the bug occurs, not just how to fix it
+- Request multiple solution approaches and evaluate trade-offs
+- Test the fix in the actual environment before accepting it
+
+**Common debugging scenarios where AI excels:**
+- Explaining cryptic error messages and stack traces
+- Identifying CSS specificity conflicts or z-index issues
+- Diagnosing race conditions in async operations
+- Suggesting fixes for cross-browser compatibility issues
+- Identifying memory leaks in component lifecycle
+
+### Q7: How do you use AI to assist with code refactoring and performance optimization?
+**A:** AI can identify refactoring opportunities and suggest optimizations:
+
+**Identifying performance issues:**
+```vue
+<!-- Before: AI identifies unnecessary re-renders -->
+<script setup>
+import { ref, computed } from 'vue';
+
+const items = ref([/* large array */]);
+const searchTerm = ref('');
+
+// Problem: Filters run on every render, even when unrelated state changes
+const filteredItems = computed(() => {
+  return items.value.filter(item => 
+    item.name.toLowerCase().includes(searchTerm.value.toLowerCase())
+  );
+});
+</script>
+
+<!-- After: AI suggests debounced search with memoization -->
+<script setup>
+import { ref, computed, watch } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+
+const items = ref([/* large array */]);
+const searchTerm = ref('');
+const debouncedSearch = ref('');
+
+const updateSearch = useDebounceFn((value) => {
+  debouncedSearch.value = value;
+}, 300);
+
+watch(searchTerm, (value) => updateSearch(value));
+
+const filteredItems = computed(() => {
+  if (!debouncedSearch.value) return items.value;
+  const term = debouncedSearch.value.toLowerCase();
+  return items.value.filter(item => 
+    item.name.toLowerCase().includes(term)
+  );
+});
+</script>
+```
+
+**Best practices for AI-assisted refactoring:**
+- Ask AI to explain the reasoning behind suggested changes
+- Refactor in small, testable increments rather than rewriting entire files
+- Run existing tests after each refactoring step
+- Use AI to identify code smells: duplicated logic, overly complex conditionals, deeply nested callbacks
+
+### Q8: How do you integrate AI tools into your team's development workflow and CI/CD pipeline?
+**A:** AI can be embedded at multiple points in the development pipeline:
+
+**Code authoring phase:**
+- IDE-integrated assistants (Copilot, Cursor) for real-time suggestions
+- CLI tools (Claude Code) for complex multi-file changes and debugging
+
+**Code review phase:**
+- AI-powered PR review bots to flag potential issues
+- Automated suggestions for test coverage gaps
+- Style and consistency checking beyond what linters catch
+
+**CI/CD integration:**
+- Automated generation of changelog entries from commits
+- AI-assisted dependency update PRs with risk assessment
+- Automated accessibility audits with AI interpretation of results
+
+**Team guidelines to establish:**
+- Define which tasks are appropriate for AI assistance
+- Require human review of all AI-generated code
+- Document when AI was used for audit and learning purposes
+- Set standards for prompt quality and output validation
+- Regular team discussions about useful patterns and pitfalls discovered
+
+**Example team policy:**
+```markdown
+## AI Usage Guidelines
+1. AI-generated code must pass all existing tests and linting rules
+2. Developers must understand and be able to explain any AI-generated code they commit
+3. Security-critical code (auth, payments, data validation) requires additional human review
+4. AI suggestions for architecture decisions must be discussed with the team
+5. Keep prompts and useful patterns in a shared knowledge base
+```
+
+## AI-Assisted Debugging Scenarios (Live Coding Exercise)
+
+> **Instructions for the interviewer:** Present the candidate with each problematic code scenario. Ask them to identify the issues and fix the code using an AI assistant (e.g., Claude, Copilot). Evaluate:
+> - How they describe the problem to the AI (prompt quality)
+> - How they validate and iterate on the AI's suggestions
+> - Their understanding of the underlying concepts
+> - Whether they blindly accept AI output or critically review it
+
+---
+
+### Scenario 1: Vue/Nuxt — Memory Leak and Reactivity Bug
+
+**Context:** A developer wrote a Nuxt 3 product listing page. Users report the page gets slower over time and the search filter doesn't work correctly after navigating away and back.
+
+**Problematic Code:**
+```vue
+<!-- pages/products.vue -->
+<template>
+  <div>
+    <input v-model="search" placeholder="Search products..." />
+    <div v-for="product in products" :key="product.id">
+      <h3>{{ product.name }}</h3>
+      <p>{{ product.price }}</p>
+    </div>
+    <button @click="loadMore">Load More</button>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue';
+
+const search = ref('');
+const products = ref([]);
+const page = ref(1);
+let interval;
+
+const fetchProducts = async () => {
+  const data = await $fetch(`/api/products?page=${page.value}&search=${search.value}`);
+  products.value = [...products.value, ...data];
+};
+
+// Poll for new products every 5 seconds
+interval = setInterval(async () => {
+  const latest = await $fetch('/api/products/latest');
+  products.value.push(latest);
+}, 5000);
+
+watch(search, () => {
+  fetchProducts();
+});
+
+const loadMore = () => {
+  page.value++;
+  fetchProducts();
+};
+
+fetchProducts();
+</script>
+```
+
+**Issues to identify (Expected Answer):**
+
+1. **Memory leak**: `setInterval` is never cleared — when the user navigates away, the interval continues running, fetching data and accumulating in memory. Missing `onUnmounted` cleanup.
+2. **Reactivity bug on search**: When `search` changes, `fetchProducts()` appends results to the existing array instead of resetting it. Filtered results mix with previous unfiltered results.
+3. **Race condition**: Rapid typing triggers multiple concurrent `fetchProducts` calls that may resolve out of order, causing stale data to overwrite fresh data.
+4. **No loading/error state**: The UI provides no feedback during data fetching.
+5. **Missing Nuxt best practices**: Should use `useFetch` or `useAsyncData` for SSR-compatible data fetching instead of raw `$fetch` in setup.
+6. **Polling pushes single object**: `products.value.push(latest)` assumes `latest` is a single product but it could be an array — no type safety.
+
+**Fixed Code:**
+```vue
+<!-- pages/products.vue -->
+<template>
+  <div>
+    <input v-model="search" placeholder="Search products..." />
+    <div v-if="pending">Loading...</div>
+    <div v-else-if="error">Failed to load products.</div>
+    <template v-else>
+      <div v-for="product in products" :key="product.id">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.price }}</p>
+      </div>
+      <button @click="loadMore" :disabled="loadingMore">
+        {{ loadingMore ? 'Loading...' : 'Load More' }}
+      </button>
+    </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch, onUnmounted } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+
+const search = ref('');
+const page = ref(1);
+const loadingMore = ref(false);
+
+const { data: products, pending, error, refresh } = await useAsyncData(
+  'products',
+  () => $fetch(`/api/products?page=${page.value}&search=${search.value}`),
+  { watch: [page] }
+);
+
+// Debounce search to avoid race conditions
+const debouncedSearch = useDebounceFn(() => {
+  page.value = 1;
+  refresh();
+}, 300);
+
+watch(search, () => {
+  debouncedSearch();
+});
+
+// Polling with proper cleanup
+const interval = setInterval(() => {
+  refresh();
+}, 5000);
+
+onUnmounted(() => {
+  clearInterval(interval);
+});
+
+const loadMore = async () => {
+  loadingMore.value = true;
+  page.value++;
+  await refresh();
+  loadingMore.value = false;
+};
+</script>
+```
+
+---
+
+### Scenario 2: TypeScript/JavaScript — Unsafe Types and Async Pitfalls
+
+**Context:** A developer built an API service layer for a Vue 3 app. The code compiles without errors but causes runtime crashes and data corruption in production.
+
+**Problematic Code:**
+```typescript
+// services/api.ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'editor' | 'viewer';
+}
+
+interface ApiResponse {
+  data: any;
+  status: string;
+  message: string;
+}
+
+class UserService {
+  private baseUrl = '/api';
+  private cache: any = {};
+
+  async getUsers(): Promise<User[]> {
+    if (this.cache.users) {
+      return this.cache.users;
+    }
+
+    const response = await fetch(`${this.baseUrl}/users`);
+    const result: ApiResponse = await response.json();
+    this.cache.users = result.data;
+    return result.data;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    const response = await fetch(`${this.baseUrl}/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+    const result = await response.json();
+    
+    // Update cache
+    const users = this.cache.users;
+    const index = users.findIndex((u: any) => u.id === id);
+    users[index] = { ...users[index], ...result.data };
+    
+    return result.data;
+  }
+
+  async deleteUsers(ids: number[]): Promise<void> {
+    ids.forEach(async (id) => {
+      await fetch(`${this.baseUrl}/users/${id}`, { method: 'DELETE' });
+    });
+    
+    // Remove from cache
+    this.cache.users = this.cache.users.filter(
+      (u: any) => !ids.includes(u.id)
+    );
+  }
+
+  async getUsersByRole(role: string): Promise<User[]> {
+    const users = await this.getUsers();
+    return users.filter(u => u.role == role);
+  }
+}
+
+export const userService = new UserService();
+```
+
+**Issues to identify (Expected Answer):**
+
+1. **Excessive `any` types**: `ApiResponse.data` is `any`, cache is `any` — defeats the purpose of TypeScript. Runtime type mismatches go undetected.
+2. **No error handling**: No check for `response.ok`. Network failures, 404s, and 500s silently return malformed data that gets cached.
+3. **`forEach` with `async`**: In `deleteUsers`, `forEach` doesn't await — the function returns immediately before deletions complete. Cache is modified assuming all deletes succeeded.
+4. **Cache invalidation bug**: `updateUser` directly mutates the cache array. If `this.cache.users` is `undefined` (cache miss), it throws `Cannot read property 'findIndex' of undefined`.
+5. **Stale cache**: No TTL or invalidation strategy. Once cached, data never refreshes.
+6. **Missing `Content-Type` header**: The PUT request sends JSON body but doesn't set `Content-Type: application/json` header.
+7. **Loose equality**: `u.role == role` uses loose comparison instead of strict `===`.
+8. **`role` parameter typed as `string`**: Should use the `User['role']` union type for type safety.
+
+**Fixed Code:**
+```typescript
+// services/api.ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'editor' | 'viewer';
+}
+
+interface ApiResponse<T> {
+  data: T;
+  status: string;
+  message: string;
+}
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+class UserService {
+  private baseUrl = '/api';
+  private cache: Map<string, CacheEntry<unknown>> = new Map();
+  private cacheTTL = 60000; // 1 minute
+
+  private getCached<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    if (entry && Date.now() - entry.timestamp < this.cacheTTL) {
+      return entry.data as T;
+    }
+    this.cache.delete(key);
+    return null;
+  }
+
+  private setCache<T>(key: string, data: T): void {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  private async request<T>(url: string, options?: RequestInit): Promise<T> {
+    const response = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+
+    const result: ApiResponse<T> = await response.json();
+    return result.data;
+  }
+
+  async getUsers(): Promise<User[]> {
+    const cached = this.getCached<User[]>('users');
+    if (cached) return cached;
+
+    const users = await this.request<User[]>(`${this.baseUrl}/users`);
+    this.setCache('users', users);
+    return users;
+  }
+
+  async updateUser(id: number, updates: Partial<Omit<User, 'id'>>): Promise<User> {
+    const updatedUser = await this.request<User>(
+      `${this.baseUrl}/users/${id}`,
+      { method: 'PUT', body: JSON.stringify(updates) }
+    );
+
+    // Invalidate cache instead of manual mutation
+    this.cache.delete('users');
+    return updatedUser;
+  }
+
+  async deleteUsers(ids: number[]): Promise<void> {
+    // Use Promise.all instead of forEach
+    await Promise.all(
+      ids.map(id =>
+        this.request<void>(`${this.baseUrl}/users/${id}`, { method: 'DELETE' })
+      )
+    );
+
+    this.cache.delete('users');
+  }
+
+  async getUsersByRole(role: User['role']): Promise<User[]> {
+    const users = await this.getUsers();
+    return users.filter(u => u.role === role);
+  }
+}
+
+export const userService = new UserService();
+```
+
+---
+
+### Scenario 3: HTML, CSS & Accessibility — Inaccessible Modal with Layout Bugs
+
+**Context:** A developer created a confirmation modal component. QA reports: (1) screen reader users can't interact with it, (2) the modal doesn't trap focus, (3) the layout breaks on mobile, and (4) users can scroll the background when the modal is open.
+
+**Problematic Code:**
+```vue
+<!-- components/ConfirmModal.vue -->
+<template>
+  <div v-if="isOpen" class="modal-overlay" @click="close">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <span class="title">{{ title }}</span>
+        <span class="close-btn" @click="close">✕</span>
+      </div>
+      <div class="modal-body">
+        <p>{{ message }}</p>
+      </div>
+      <div class="modal-footer">
+        <div class="btn cancel" @click="close">Cancel</div>
+        <div class="btn confirm" @click="confirm">{{ confirmText }}</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const props = defineProps({
+  title: String,
+  message: String,
+  confirmText: { type: String, default: 'Confirm' }
+});
+
+const emit = defineEmits(['confirm', 'close']);
+
+const isOpen = ref(false);
+
+const open = () => { isOpen.value = true; };
+const close = () => { isOpen.value = false; emit('close'); };
+const confirm = () => { emit('confirm'); close(); };
+
+defineExpose({ open, close });
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  width: 500px;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel {
+  background: #e0e0e0;
+}
+
+.confirm {
+  background: #1976d2;
+  color: white;
+}
+</style>
+```
+
+**Issues to identify (Expected Answer):**
+
+**Accessibility issues:**
+1. **No ARIA attributes**: Missing `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, `aria-describedby`.
+2. **Close button is a `<span>`**: Not focusable or announced by screen readers. Must be a `<button>` with `aria-label`.
+3. **Action buttons are `<div>`**: Not keyboard-operable or announced as interactive. Must be `<button>` elements.
+4. **No focus trap**: Users can Tab out of the modal into background content.
+5. **No Escape key handling**: Keyboard users have no way to dismiss the modal without Tab-navigating to the close button.
+6. **No focus management**: Focus doesn't move into the modal on open or return to the trigger element on close.
+
+**CSS/Layout issues:**
+7. **Fixed width `500px`**: Overflows on mobile screens (< 500px width). No responsive handling.
+8. **Background scroll not prevented**: Page behind the modal remains scrollable.
+9. **No `z-index`**: Modal may appear behind other positioned elements.
+10. **`100vw` causes horizontal scrollbar**: On Windows (scrollbar takes space), `100vw` includes scrollbar width, creating overflow.
+
+**Fixed Code:**
+```vue
+<!-- components/ConfirmModal.vue -->
+<template>
+  <Teleport to="body">
+    <Transition name="modal">
+      <div
+        v-if="isOpen"
+        class="modal-overlay"
+        role="dialog"
+        aria-modal="true"
+        :aria-labelledby="titleId"
+        :aria-describedby="bodyId"
+        @click.self="close"
+        @keydown.escape="close"
+      >
+        <div
+          ref="modalContent"
+          class="modal-content"
+          tabindex="-1"
+        >
+          <header class="modal-header">
+            <h2 :id="titleId" class="title">{{ title }}</h2>
+            <button
+              class="close-btn"
+              aria-label="Close dialog"
+              @click="close"
+            >
+              ✕
+            </button>
+          </header>
+          <div :id="bodyId" class="modal-body">
+            <p>{{ message }}</p>
+          </div>
+          <footer class="modal-footer">
+            <button class="btn cancel" @click="close">
+              Cancel
+            </button>
+            <button class="btn confirm" ref="confirmBtn" @click="handleConfirm">
+              {{ confirmText }}
+            </button>
+          </footer>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+import { ref, watch, nextTick, onUnmounted, useId } from 'vue';
+
+const props = defineProps<{
+  title: string;
+  message: string;
+  confirmText?: string;
+}>();
+
+const emit = defineEmits<{
+  confirm: [];
+  close: [];
+}>();
+
+const titleId = `modal-title-${useId()}`;
+const bodyId = `modal-body-${useId()}`;
+
+const isOpen = ref(false);
+const modalContent = ref<HTMLElement | null>(null);
+const confirmBtn = ref<HTMLElement | null>(null);
+let previouslyFocusedElement: HTMLElement | null = null;
+
+const open = () => {
+  previouslyFocusedElement = document.activeElement as HTMLElement;
+  isOpen.value = true;
+};
+
+const close = () => {
+  isOpen.value = false;
+  emit('close');
+  // Return focus to trigger element
+  nextTick(() => {
+    previouslyFocusedElement?.focus();
+  });
+};
+
+const handleConfirm = () => {
+  emit('confirm');
+  close();
+};
+
+// Focus trap
+const trapFocus = (event: KeyboardEvent) => {
+  if (!isOpen.value || event.key !== 'Tab') return;
+
+  const modal = modalContent.value;
+  if (!modal) return;
+
+  const focusableElements = modal.querySelectorAll<HTMLElement>(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  if (event.shiftKey && document.activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+  } else if (!event.shiftKey && document.activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+  }
+};
+
+// Lock body scroll and manage focus
+watch(isOpen, async (open) => {
+  if (open) {
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', trapFocus);
+    await nextTick();
+    confirmBtn.value?.focus();
+  } else {
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', trapFocus);
+  }
+});
+
+onUnmounted(() => {
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', trapFocus);
+});
+
+defineExpose({ open, close });
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  width: min(500px, calc(100% - 32px));
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 24px;
+  outline: none;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.close-btn:hover,
+.close-btn:focus-visible {
+  background: #f0f0f0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+.cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.cancel:hover {
+  background: #d0d0d0;
+}
+
+.confirm {
+  background: #1976d2;
+  color: white;
+}
+
+.confirm:hover {
+  background: #1565c0;
+}
+
+/* Transition */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active {
+    transition: none;
+  }
+}
+</style>
+```
+
+---
+
+### Scenario 4: Performance — Unoptimized Data Table with Rendering Issues
+
+**Context:** A developer built a data table component that displays 10,000+ rows. Users report: (1) the page freezes on load, (2) sorting takes 5+ seconds, (3) typing in the filter input is extremely laggy, and (4) scrolling is janky.
+
+**Problematic Code:**
+```vue
+<!-- components/DataTable.vue -->
+<template>
+  <div class="table-container">
+    <input
+      :value="filter"
+      @input="filter = $event.target.value; applyFilter()"
+      placeholder="Filter..."
+    />
+    <select @change="sortBy($event.target.value)">
+      <option value="">Sort by...</option>
+      <option v-for="col in columns" :key="col" :value="col">{{ col }}</option>
+    </select>
+
+    <table>
+      <thead>
+        <tr>
+          <th v-for="col in columns" :key="col">{{ col }}</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(row, index) in displayedRows" :key="index">
+          <td v-for="col in columns" :key="col">
+            <span v-html="highlight(row[col])"></span>
+          </td>
+          <td>
+            <button @click="editRow(row)">Edit</button>
+            <button @click="deleteRow(row)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const props = defineProps({
+  columns: Array,
+  fetchUrl: String
+});
+
+const allRows = ref([]);
+const displayedRows = ref([]);
+const filter = ref('');
+const sortColumn = ref('');
+
+onMounted(async () => {
+  const response = await fetch(props.fetchUrl);
+  const data = await response.json();
+  allRows.value = data;
+  displayedRows.value = data;
+});
+
+const applyFilter = () => {
+  displayedRows.value = allRows.value.filter(row =>
+    Object.values(row).some(val =>
+      String(val).toLowerCase().includes(filter.value.toLowerCase())
+    )
+  );
+};
+
+const sortBy = (column) => {
+  sortColumn.value = column;
+  displayedRows.value = [...displayedRows.value].sort((a, b) => {
+    return String(a[column]).localeCompare(String(b[column]));
+  });
+};
+
+const highlight = (text) => {
+  if (!filter.value) return text;
+  const regex = new RegExp(`(${filter.value})`, 'gi');
+  return String(text).replace(regex, '<mark>$1</mark>');
+};
+
+const editRow = (row) => { /* ... */ };
+const deleteRow = (row) => { /* ... */ };
+</script>
+
+<style scoped>
+.table-container {
+  height: 600px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}
+
+tr:nth-child(even) {
+  background: #f5f5f5;
+}
+</style>
+```
+
+**Issues to identify (Expected Answer):**
+
+**Performance issues:**
+1. **Rendering all 10,000+ rows at once**: No virtualization. The DOM contains thousands of `<tr>` elements, causing massive memory usage and layout thrashing.
+2. **`v-html` with `highlight()` on every cell**: Creates a regex and runs string replacement for every cell on every render — O(rows × columns) per re-render. Also an XSS risk if `filter` contains HTML.
+3. **No debounce on filter input**: `applyFilter()` runs synchronously on every keystroke, blocking the main thread during filtering of 10,000+ rows.
+4. **`:key="index"`**: Using array index as key causes Vue to re-render all rows when the list changes (sort, filter) instead of efficiently patching.
+5. **Sort mutates displayed rows directly**: Loses the original sort order; applying a filter after sorting requires re-sorting.
+6. **Inline event handlers create new functions**: `@click="editRow(row)"` creates a new closure for every row on every render.
+
+**CSS/Layout issues:**
+7. **No `table-layout: fixed`**: Browser recalculates column widths on every row change.
+8. **Sticky header missing**: Headers scroll out of view in a large table.
+
+**Fixed Code:**
+```vue
+<!-- components/DataTable.vue -->
+<template>
+  <div class="table-container">
+    <div class="table-controls">
+      <input
+        v-model="filter"
+        placeholder="Filter..."
+        aria-label="Filter table data"
+      />
+      <select v-model="sortColumn" aria-label="Sort by column">
+        <option value="">Sort by...</option>
+        <option v-for="col in columns" :key="col" :value="col">{{ col }}</option>
+      </select>
+      <span class="row-count">{{ filteredRows.length }} rows</span>
+    </div>
+
+    <div class="table-scroll" ref="scrollContainer" @scroll="onScroll">
+      <table>
+        <thead>
+          <tr>
+            <th v-for="col in columns" :key="col">{{ col }}</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :style="{ height: offsetTop + 'px' }" aria-hidden="true"></tr>
+          <tr v-for="row in visibleRows" :key="row.id">
+            <td v-for="col in columns" :key="col">
+              <template v-if="filter">
+                <span v-for="(segment, i) in highlightSegments(row[col])" :key="i">
+                  <mark v-if="segment.match">{{ segment.text }}</mark>
+                  <template v-else>{{ segment.text }}</template>
+                </span>
+              </template>
+              <template v-else>{{ row[col] }}</template>
+            </td>
+            <td>
+              <button @click="editRow(row.id)">Edit</button>
+              <button @click="deleteRow(row.id)">Delete</button>
+            </td>
+          </tr>
+          <tr :style="{ height: offsetBottom + 'px' }" aria-hidden="true"></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+
+const ROW_HEIGHT = 40;
+const VISIBLE_BUFFER = 10;
+
+const props = defineProps<{
+  columns: string[];
+  fetchUrl: string;
+}>();
+
+const allRows = ref<Record<string, any>[]>([]);
+const filter = ref('');
+const debouncedFilter = ref('');
+const sortColumn = ref('');
+const scrollTop = ref(0);
+const scrollContainer = ref<HTMLElement | null>(null);
+
+// Debounce filter input
+const updateFilter = useDebounceFn((value: string) => {
+  debouncedFilter.value = value;
+}, 250);
+
+watch(filter, (value) => updateFilter(value));
+
+// Computed: filter then sort (derived from source data, never mutated)
+const filteredRows = computed(() => {
+  let rows = allRows.value;
+
+  if (debouncedFilter.value) {
+    const term = debouncedFilter.value.toLowerCase();
+    rows = rows.filter(row =>
+      props.columns.some(col =>
+        String(row[col]).toLowerCase().includes(term)
+      )
+    );
+  }
+
+  if (sortColumn.value) {
+    const col = sortColumn.value;
+    rows = [...rows].sort((a, b) =>
+      String(a[col]).localeCompare(String(b[col]))
+    );
+  }
+
+  return rows;
+});
+
+// Virtual scrolling
+const visibleCount = computed(() => {
+  if (!scrollContainer.value) return 30;
+  return Math.ceil(scrollContainer.value.clientHeight / ROW_HEIGHT) + VISIBLE_BUFFER * 2;
+});
+
+const startIndex = computed(() => {
+  return Math.max(0, Math.floor(scrollTop.value / ROW_HEIGHT) - VISIBLE_BUFFER);
+});
+
+const visibleRows = computed(() => {
+  return filteredRows.value.slice(startIndex.value, startIndex.value + visibleCount.value);
+});
+
+const offsetTop = computed(() => startIndex.value * ROW_HEIGHT);
+const offsetBottom = computed(() => {
+  const remaining = filteredRows.value.length - startIndex.value - visibleCount.value;
+  return Math.max(0, remaining) * ROW_HEIGHT;
+});
+
+const onScroll = (event: Event) => {
+  scrollTop.value = (event.target as HTMLElement).scrollTop;
+};
+
+// Safe highlighting without v-html (prevents XSS)
+const highlightSegments = (text: unknown) => {
+  const str = String(text);
+  if (!debouncedFilter.value) return [{ text: str, match: false }];
+
+  const segments: { text: string; match: boolean }[] = [];
+  const term = debouncedFilter.value.toLowerCase();
+  let remaining = str;
+
+  while (remaining.length > 0) {
+    const matchIndex = remaining.toLowerCase().indexOf(term);
+    if (matchIndex === -1) {
+      segments.push({ text: remaining, match: false });
+      break;
+    }
+    if (matchIndex > 0) {
+      segments.push({ text: remaining.slice(0, matchIndex), match: false });
+    }
+    segments.push({ text: remaining.slice(matchIndex, matchIndex + term.length), match: true });
+    remaining = remaining.slice(matchIndex + term.length);
+  }
+
+  return segments;
+};
+
+const editRow = (id: string | number) => { /* ... */ };
+const deleteRow = (id: string | number) => { /* ... */ };
+
+// Fetch data
+onMounted(async () => {
+  const response = await fetch(props.fetchUrl);
+  const data = await response.json();
+  allRows.value = data;
+});
+</script>
+
+<style scoped>
+.table-container {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}
+
+.table-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+
+.row-count {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  will-change: transform;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+  box-shadow: 0 1px 0 #ddd;
+}
+
+th, td {
+  padding: 8px 12px;
+  text-align: left;
+  height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+tr:nth-child(even) {
+  background: #f9f9f9;
+}
+</style>
+```
+
+---
+
+### Evaluation Criteria for AI-Assisted Scenarios
+
+| Criteria | Poor (1-2) | Good (3-4) | Excellent (5) |
+|----------|-----------|------------|---------------|
+| **Problem identification** | Misses critical issues | Finds most issues independently | Identifies all issues and explains root causes |
+| **Prompt crafting** | Vague or overly broad prompts | Provides context and constraints | Precise prompts with code context, expected behavior, and constraints |
+| **Critical review of AI output** | Accepts output without question | Checks for obvious errors | Validates types, tests edge cases, questions assumptions |
+| **Understanding depth** | Can't explain why the fix works | Explains the fix correctly | Connects the fix to broader principles (reactivity model, browser rendering, WCAG) |
+| **Iteration quality** | Gives up or accepts first suggestion | Refines with follow-up prompts | Combines AI suggestions with own knowledge to reach optimal solution |
+| **Security awareness** | Misses security implications | Identifies XSS/injection risks when pointed out | Proactively catches `v-html` XSS, unsafe regex, missing sanitization |
+
 > **Note**: This document should be regularly updated to reflect current best practices and technology advancements.
