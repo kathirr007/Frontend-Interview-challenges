@@ -1970,7 +1970,9 @@ const filteredItems = computed(() => {
 
 ### Scenario 1: Vue/Nuxt — Memory Leak and Reactivity Bug
 
-**Context:** A developer wrote a Nuxt 3 product listing page. Users report the page gets slower over time and the search filter doesn't work correctly after navigating away and back.
+**Context:** A developer wrote a Nuxt 3 product listing page using [DummyJSON](https://dummyjson.com/docs/products) as the backend API. Users report the page gets slower over time and the search filter doesn't work correctly after navigating away and back.
+
+> **API Reference:** `https://dummyjson.com/products?limit=10&skip=0` returns `{ products: [...], total, skip, limit }`. Search: `https://dummyjson.com/products/search?q=phone`.
 
 **Problematic Code:**
 ```vue
@@ -1979,8 +1981,8 @@ const filteredItems = computed(() => {
   <div>
     <input v-model="search" placeholder="Search products..." />
     <div v-for="product in products" :key="product.id">
-      <h3>{{ product.name }}</h3>
-      <p>{{ product.price }}</p>
+      <h3>{{ product.title }}</h3>
+      <p>${{ product.price }}</p>
     </div>
     <button @click="loadMore">Load More</button>
   </div>
@@ -1991,18 +1993,19 @@ import { ref, watch } from 'vue';
 
 const search = ref('');
 const products = ref([]);
-const page = ref(1);
+const page = ref(0);
+const limit = 10;
 let interval;
 
 const fetchProducts = async () => {
-  const data = await $fetch(`/api/products?page=${page.value}&search=${search.value}`);
-  products.value = [...products.value, ...data];
+  const data = await $fetch(`https://dummyjson.com/products?limit=${limit}&skip=${page.value * limit}`);
+  products.value = [...products.value, ...data.products];
 };
 
 // Poll for new products every 5 seconds
 interval = setInterval(async () => {
-  const latest = await $fetch('/api/products/latest');
-  products.value.push(latest);
+  const latest = await $fetch('https://dummyjson.com/products?limit=1&skip=0&sortBy=id&order=desc');
+  products.value.push(latest.products[0]);
 }, 5000);
 
 watch(search, () => {
@@ -2036,11 +2039,14 @@ fetchProducts();
     <div v-if="pending">Loading...</div>
     <div v-else-if="error">Failed to load products.</div>
     <template v-else>
-      <div v-for="product in products" :key="product.id">
-        <h3>{{ product.name }}</h3>
-        <p>{{ product.price }}</p>
+      <div v-for="product in data?.products" :key="product.id">
+        <h3>{{ product.title }}</h3>
+        <p>${{ product.price }}</p>
       </div>
-      <button @click="loadMore" :disabled="loadingMore">
+      <button
+        @click="loadMore"
+        :disabled="loadingMore || (data && page * limit >= data.total)"
+      >
         {{ loadingMore ? 'Loading...' : 'Load More' }}
       </button>
     </template>
@@ -2052,18 +2058,26 @@ import { ref, watch, onUnmounted } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 
 const search = ref('');
-const page = ref(1);
+const page = ref(0);
+const limit = 10;
 const loadingMore = ref(false);
 
-const { data: products, pending, error, refresh } = await useAsyncData(
+const fetchUrl = computed(() => {
+  if (search.value) {
+    return `https://dummyjson.com/products/search?q=${search.value}&limit=${limit}&skip=${page.value * limit}`;
+  }
+  return `https://dummyjson.com/products?limit=${limit}&skip=${page.value * limit}`;
+});
+
+const { data, pending, error, refresh } = await useAsyncData(
   'products',
-  () => $fetch(`/api/products?page=${page.value}&search=${search.value}`),
-  { watch: [page] }
+  () => $fetch(fetchUrl.value),
+  { watch: [fetchUrl] }
 );
 
 // Debounce search to avoid race conditions
 const debouncedSearch = useDebounceFn(() => {
-  page.value = 1;
+  page.value = 0;
   refresh();
 }, 300);
 
@@ -2093,26 +2107,29 @@ const loadMore = async () => {
 
 ### Scenario 2: TypeScript/JavaScript — Unsafe Types and Async Pitfalls
 
-**Context:** A developer built an API service layer for a Vue 3 app. The code compiles without errors but causes runtime crashes and data corruption in production.
+**Context:** A developer built an API service layer for a Vue 3 app using [ReqRes](https://reqres.in/) as the backend. The code compiles without errors but causes runtime crashes and data corruption in production.
+
+> **API Reference:** `https://reqres.in/api/users?page=1` returns `{ page, per_page, total, data: [{ id, email, first_name, last_name, avatar }] }`. PUT/DELETE endpoints: `https://reqres.in/api/users/{id}`.
 
 **Problematic Code:**
 ```typescript
 // services/api.ts
 interface User {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: 'admin' | 'editor' | 'viewer';
 }
 
 interface ApiResponse {
   data: any;
-  status: string;
-  message: string;
+  page: number;
+  total: number;
 }
 
 class UserService {
-  private baseUrl = '/api';
+  private baseUrl = 'https://reqres.in/api';
   private cache: any = {};
 
   async getUsers(): Promise<User[]> {
@@ -2120,7 +2137,7 @@ class UserService {
       return this.cache.users;
     }
 
-    const response = await fetch(`${this.baseUrl}/users`);
+    const response = await fetch(`${this.baseUrl}/users?page=1`);
     const result: ApiResponse = await response.json();
     this.cache.users = result.data;
     return result.data;
@@ -2136,9 +2153,9 @@ class UserService {
     // Update cache
     const users = this.cache.users;
     const index = users.findIndex((u: any) => u.id === id);
-    users[index] = { ...users[index], ...result.data };
+    users[index] = { ...users[index], ...result };
     
-    return result.data;
+    return result;
   }
 
   async deleteUsers(ids: number[]): Promise<void> {
@@ -2177,15 +2194,19 @@ export const userService = new UserService();
 // services/api.ts
 interface User {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
+  avatar: string;
   role: 'admin' | 'editor' | 'viewer';
 }
 
-interface ApiResponse<T> {
-  data: T;
-  status: string;
-  message: string;
+interface ReqResListResponse<T> {
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+  data: T[];
 }
 
 interface CacheEntry<T> {
@@ -2194,7 +2215,7 @@ interface CacheEntry<T> {
 }
 
 class UserService {
-  private baseUrl = '/api';
+  private baseUrl = 'https://reqres.in/api';
   private cache: Map<string, CacheEntry<unknown>> = new Map();
   private cacheTTL = 60000; // 1 minute
 
@@ -2221,17 +2242,18 @@ class UserService {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
-    const result: ApiResponse<T> = await response.json();
-    return result.data;
+    return await response.json();
   }
 
   async getUsers(): Promise<User[]> {
     const cached = this.getCached<User[]>('users');
     if (cached) return cached;
 
-    const users = await this.request<User[]>(`${this.baseUrl}/users`);
-    this.setCache('users', users);
-    return users;
+    const result = await this.request<ReqResListResponse<User>>(
+      `${this.baseUrl}/users?page=1&per_page=12`
+    );
+    this.setCache('users', result.data);
+    return result.data;
   }
 
   async updateUser(id: number, updates: Partial<Omit<User, 'id'>>): Promise<User> {
@@ -2249,7 +2271,12 @@ class UserService {
     // Use Promise.all instead of forEach
     await Promise.all(
       ids.map(id =>
-        this.request<void>(`${this.baseUrl}/users/${id}`, { method: 'DELETE' })
+        fetch(`${this.baseUrl}/users/${id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        }).then(res => {
+          if (!res.ok) throw new Error(`Failed to delete user ${id}`);
+        })
       )
     );
 
@@ -2636,7 +2663,9 @@ defineExpose({ open, close });
 
 ### Scenario 4: Performance — Unoptimized Data Table with Rendering Issues
 
-**Context:** A developer built a data table component that displays 10,000+ rows. Users report: (1) the page freezes on load, (2) sorting takes 5+ seconds, (3) typing in the filter input is extremely laggy, and (4) scrolling is janky.
+**Context:** A developer built a data table component that fetches comments from [JSONPlaceholder](https://jsonplaceholder.typicode.com/) (500 records, simulating a large dataset). Users report: (1) the page freezes on load, (2) sorting takes 5+ seconds, (3) typing in the filter input is extremely laggy, and (4) scrolling is janky.
+
+> **API Reference:** `https://jsonplaceholder.typicode.com/comments` returns 500 comments with fields: `{ id, postId, name, email, body }`. For simulating 10,000+ rows, the code duplicates the dataset.
 
 **Problematic Code:**
 ```vue
@@ -2646,7 +2675,7 @@ defineExpose({ open, close });
     <input
       :value="filter"
       @input="filter = $event.target.value; applyFilter()"
-      placeholder="Filter..."
+      placeholder="Filter comments..."
     />
     <select @change="sortBy($event.target.value)">
       <option value="">Sort by...</option>
@@ -2678,21 +2707,22 @@ defineExpose({ open, close });
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const props = defineProps({
-  columns: Array,
-  fetchUrl: String
-});
-
+const columns = ['id', 'name', 'email', 'body'];
 const allRows = ref([]);
 const displayedRows = ref([]);
 const filter = ref('');
 const sortColumn = ref('');
 
 onMounted(async () => {
-  const response = await fetch(props.fetchUrl);
+  const response = await fetch('https://jsonplaceholder.typicode.com/comments');
   const data = await response.json();
-  allRows.value = data;
-  displayedRows.value = data;
+  // Duplicate dataset to simulate 10,000+ rows
+  const largeDataset = [];
+  for (let i = 0; i < 20; i++) {
+    largeDataset.push(...data.map((item, idx) => ({ ...item, id: i * 500 + idx })));
+  }
+  allRows.value = largeDataset;
+  displayedRows.value = largeDataset;
 });
 
 const applyFilter = () => {
@@ -2758,7 +2788,7 @@ tr:nth-child(even) {
     <div class="table-controls">
       <input
         v-model="filter"
-        placeholder="Filter..."
+        placeholder="Filter comments..."
         aria-label="Filter table data"
       />
       <select v-model="sortColumn" aria-label="Sort by column">
@@ -2801,18 +2831,22 @@ tr:nth-child(even) {
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
+
+interface Comment {
+  id: number;
+  postId: number;
+  name: string;
+  email: string;
+  body: string;
+}
 
 const ROW_HEIGHT = 40;
 const VISIBLE_BUFFER = 10;
 
-const props = defineProps<{
-  columns: string[];
-  fetchUrl: string;
-}>();
-
-const allRows = ref<Record<string, any>[]>([]);
+const columns = ['id', 'name', 'email', 'body'];
+const allRows = ref<Comment[]>([]);
 const filter = ref('');
 const debouncedFilter = ref('');
 const sortColumn = ref('');
@@ -2833,14 +2867,14 @@ const filteredRows = computed(() => {
   if (debouncedFilter.value) {
     const term = debouncedFilter.value.toLowerCase();
     rows = rows.filter(row =>
-      props.columns.some(col =>
-        String(row[col]).toLowerCase().includes(term)
+      columns.some(col =>
+        String(row[col as keyof Comment]).toLowerCase().includes(term)
       )
     );
   }
 
   if (sortColumn.value) {
-    const col = sortColumn.value;
+    const col = sortColumn.value as keyof Comment;
     rows = [...rows].sort((a, b) =>
       String(a[col]).localeCompare(String(b[col]))
     );
@@ -2898,14 +2932,21 @@ const highlightSegments = (text: unknown) => {
   return segments;
 };
 
-const editRow = (id: string | number) => { /* ... */ };
-const deleteRow = (id: string | number) => { /* ... */ };
+const editRow = (id: number) => { /* ... */ };
+const deleteRow = (id: number) => { /* ... */ };
 
-// Fetch data
+// Fetch data from JSONPlaceholder and simulate large dataset
 onMounted(async () => {
-  const response = await fetch(props.fetchUrl);
-  const data = await response.json();
-  allRows.value = data;
+  const response = await fetch('https://jsonplaceholder.typicode.com/comments');
+  if (!response.ok) throw new Error('Failed to fetch comments');
+  const data: Comment[] = await response.json();
+
+  // Duplicate to simulate 10,000 rows
+  const largeDataset: Comment[] = [];
+  for (let i = 0; i < 20; i++) {
+    largeDataset.push(...data.map((item, idx) => ({ ...item, id: i * 500 + idx })));
+  }
+  allRows.value = largeDataset;
 });
 </script>
 
