@@ -1968,9 +1968,185 @@ const filteredItems = computed(() => {
 
 ---
 
-### Scenario 1: Vue/Nuxt — Memory Leak and Reactivity Bug
+### Scenario 1A: Vue 3 — Memory Leak and Reactivity Bug
 
-**Context:** A developer wrote a Nuxt 3 product listing page using [DummyJSON](https://dummyjson.com/docs/products) as the backend API. Users report the page gets slower over time and the search filter doesn't work correctly after navigating away and back.
+**Context:** A developer wrote a Vue 3 product listing page (SPA, no SSR) using [DummyJSON](https://dummyjson.com/docs/products) as the backend API. Users report the page gets slower over time and the search filter doesn't work correctly after navigating away and back.
+
+> **API Reference:** `https://dummyjson.com/products?limit=10&skip=0` returns `{ products: [...], total, skip, limit }`. Search: `https://dummyjson.com/products/search?q=phone`.
+
+**Problematic Code:**
+```vue
+<!-- src/views/ProductList.vue -->
+<template>
+  <div>
+    <input v-model="search" placeholder="Search products..." />
+    <div v-for="product in products" :key="product.id">
+      <h3>{{ product.title }}</h3>
+      <p>${{ product.price }}</p>
+    </div>
+    <button @click="loadMore">Load More</button>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch, onMounted } from 'vue';
+
+const search = ref('');
+const products = ref([]);
+const page = ref(0);
+const limit = 10;
+let interval;
+
+const fetchProducts = async () => {
+  const response = await fetch(`https://dummyjson.com/products?limit=${limit}&skip=${page.value * limit}`);
+  const data = await response.json();
+  products.value = [...products.value, ...data.products];
+};
+
+onMounted(() => {
+  fetchProducts();
+
+  // Poll for new products every 5 seconds
+  interval = setInterval(async () => {
+    const response = await fetch('https://dummyjson.com/products?limit=1&skip=0&sortBy=id&order=desc');
+    const latest = await response.json();
+    products.value.push(latest.products[0]);
+  }, 5000);
+});
+
+watch(search, () => {
+  fetchProducts();
+});
+
+const loadMore = () => {
+  page.value++;
+  fetchProducts();
+};
+</script>
+```
+
+**Issues to identify (Expected Answer):**
+
+1. **Memory leak**: `setInterval` is never cleared — when the component unmounts (user navigates away), the interval continues running, fetching data and accumulating references in memory. Missing `onUnmounted` cleanup.
+2. **Reactivity bug on search**: When `search` changes, `fetchProducts()` appends results to the existing array instead of resetting it. Filtered results mix with previous unfiltered results.
+3. **Search doesn't use search API**: The watcher calls `fetchProducts()` which hits the listing endpoint, not the search endpoint (`/products/search?q=`). Search input has no effect on results.
+4. **Race condition**: Rapid typing triggers multiple concurrent `fetchProducts` calls that may resolve out of order, causing stale data to overwrite fresh data.
+5. **No loading/error state**: The UI provides no feedback during data fetching or when requests fail.
+6. **No error handling**: `fetch` doesn't throw on HTTP errors — a 500 response would silently push `undefined` items into the array.
+7. **Polling pushes duplicates**: The interval pushes the latest product without checking if it already exists in the list.
+
+**Fixed Code:**
+```vue
+<!-- src/views/ProductList.vue -->
+<template>
+  <div>
+    <input v-model="search" placeholder="Search products..." />
+    <div v-if="loading && !products.length">Loading...</div>
+    <div v-else-if="error">{{ error }}</div>
+    <template v-else>
+      <div v-for="product in products" :key="product.id">
+        <h3>{{ product.title }}</h3>
+        <p>${{ product.price }}</p>
+      </div>
+      <button
+        @click="loadMore"
+        :disabled="loadingMore || products.length >= total"
+      >
+        {{ loadingMore ? 'Loading...' : 'Load More' }}
+      </button>
+    </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+
+const search = ref('');
+const products = ref([]);
+const page = ref(0);
+const total = ref(0);
+const limit = 10;
+const loading = ref(false);
+const loadingMore = ref(false);
+const error = ref(null);
+let interval = null;
+let abortController = null;
+
+const fetchProducts = async (reset = false) => {
+  // Cancel any in-flight request
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+
+  if (reset) {
+    page.value = 0;
+    products.value = [];
+  }
+
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const baseUrl = search.value
+      ? `https://dummyjson.com/products/search?q=${encodeURIComponent(search.value)}`
+      : 'https://dummyjson.com/products';
+
+    const response = await fetch(
+      `${baseUrl}&limit=${limit}&skip=${page.value * limit}`.replace('?q=', '?q=').replace('products&', 'products?'),
+      { signal: abortController.signal }
+    );
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+    products.value = reset ? data.products : [...products.value, ...data.products];
+    total.value = data.total;
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      error.value = err.message;
+    }
+  } finally {
+    loading.value = false;
+    loadingMore.value = false;
+  }
+};
+
+// Debounce search to avoid race conditions
+const debouncedSearch = useDebounceFn(() => {
+  fetchProducts(true);
+}, 300);
+
+watch(search, () => {
+  debouncedSearch();
+});
+
+const loadMore = () => {
+  loadingMore.value = true;
+  page.value++;
+  fetchProducts(false);
+};
+
+onMounted(() => {
+  fetchProducts(true);
+
+  // Polling with proper cleanup
+  interval = setInterval(() => {
+    fetchProducts(true);
+  }, 30000); // Poll every 30s, not 5s
+});
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval);
+  if (abortController) abortController.abort();
+});
+</script>
+```
+
+---
+
+### Scenario 1B: Nuxt 3 — Memory Leak and Reactivity Bug
+
+**Context:** The same product listing feature, but built using Nuxt 3 with SSR. A developer used Nuxt-specific patterns incorrectly. Users report the page gets slower over time and the search filter doesn't work correctly after navigating away and back.
 
 > **API Reference:** `https://dummyjson.com/products?limit=10&skip=0` returns `{ products: [...], total, skip, limit }`. Search: `https://dummyjson.com/products/search?q=phone`.
 
@@ -2024,11 +2200,13 @@ fetchProducts();
 **Issues to identify (Expected Answer):**
 
 1. **Memory leak**: `setInterval` is never cleared — when the user navigates away, the interval continues running, fetching data and accumulating in memory. Missing `onUnmounted` cleanup.
-2. **Reactivity bug on search**: When `search` changes, `fetchProducts()` appends results to the existing array instead of resetting it. Filtered results mix with previous unfiltered results.
-3. **Race condition**: Rapid typing triggers multiple concurrent `fetchProducts` calls that may resolve out of order, causing stale data to overwrite fresh data.
-4. **No loading/error state**: The UI provides no feedback during data fetching.
-5. **Missing Nuxt best practices**: Should use `useFetch` or `useAsyncData` for SSR-compatible data fetching instead of raw `$fetch` in setup.
-6. **Polling pushes single object**: `products.value.push(latest)` assumes `latest` is a single product but it could be an array — no type safety.
+2. **`setInterval` runs during SSR**: On the server, `setInterval` runs but never gets cleaned up since `onUnmounted` is never called server-side. This leaks on every request.
+3. **Reactivity bug on search**: When `search` changes, `fetchProducts()` appends results to the existing array instead of resetting it. Filtered results mix with previous unfiltered results.
+4. **Search doesn't use search API**: The watcher calls `fetchProducts()` which hits the listing endpoint, ignoring the search term entirely.
+5. **Race condition**: Rapid typing triggers multiple concurrent `$fetch` calls that may resolve out of order.
+6. **Not using Nuxt composables**: `$fetch` in `<script setup>` without `useAsyncData`/`useFetch` causes duplicate fetches (server + client hydration mismatch) and loses SSR benefits like caching and deduplication.
+7. **No loading/error state**: The UI provides no feedback during data fetching.
+8. **`fetchProducts()` called at top level**: Runs on both server and client, causing double data fetching and hydration mismatches.
 
 **Fixed Code:**
 ```vue
@@ -2037,7 +2215,7 @@ fetchProducts();
   <div>
     <input v-model="search" placeholder="Search products..." />
     <div v-if="pending">Loading...</div>
-    <div v-else-if="error">Failed to load products.</div>
+    <div v-else-if="error">Failed to load products: {{ error.message }}</div>
     <template v-else>
       <div v-for="product in data?.products" :key="product.id">
         <h3>{{ product.title }}</h3>
@@ -2045,7 +2223,7 @@ fetchProducts();
       </div>
       <button
         @click="loadMore"
-        :disabled="loadingMore || (data && page * limit >= data.total)"
+        :disabled="loadingMore || !data || page * limit >= data.total"
       >
         {{ loadingMore ? 'Loading...' : 'Load More' }}
       </button>
@@ -2054,7 +2232,7 @@ fetchProducts();
 </template>
 
 <script setup>
-import { ref, watch, onUnmounted } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 
 const search = ref('');
@@ -2064,11 +2242,12 @@ const loadingMore = ref(false);
 
 const fetchUrl = computed(() => {
   if (search.value) {
-    return `https://dummyjson.com/products/search?q=${search.value}&limit=${limit}&skip=${page.value * limit}`;
+    return `https://dummyjson.com/products/search?q=${encodeURIComponent(search.value)}&limit=${limit}&skip=${page.value * limit}`;
   }
   return `https://dummyjson.com/products?limit=${limit}&skip=${page.value * limit}`;
 });
 
+// useAsyncData handles SSR, caching, and deduplication
 const { data, pending, error, refresh } = await useAsyncData(
   'products',
   () => $fetch(fetchUrl.value),
@@ -2078,20 +2257,23 @@ const { data, pending, error, refresh } = await useAsyncData(
 // Debounce search to avoid race conditions
 const debouncedSearch = useDebounceFn(() => {
   page.value = 0;
-  refresh();
 }, 300);
 
 watch(search, () => {
   debouncedSearch();
 });
 
-// Polling with proper cleanup
-const interval = setInterval(() => {
-  refresh();
-}, 5000);
+// Polling — only on client side, with proper cleanup
+let interval: ReturnType<typeof setInterval> | null = null;
+
+if (import.meta.client) {
+  interval = setInterval(() => {
+    refresh();
+  }, 30000);
+}
 
 onUnmounted(() => {
-  clearInterval(interval);
+  if (interval) clearInterval(interval);
 });
 
 const loadMore = async () => {
@@ -2102,6 +2284,17 @@ const loadMore = async () => {
 };
 </script>
 ```
+
+**Key differences between Vue 3 and Nuxt 3 fixes:**
+
+| Concern | Vue 3 (SPA) Fix | Nuxt 3 (SSR) Fix |
+|---------|-----------------|-------------------|
+| **Data fetching** | `fetch()` + manual state management | `useAsyncData()` with automatic SSR/hydration |
+| **Race conditions** | `AbortController` to cancel in-flight requests | `useAsyncData` handles deduplication internally |
+| **Polling guard** | Start in `onMounted` (no SSR concern) | Guard with `import.meta.client` to avoid server-side intervals |
+| **URL construction** | Manual URL building in fetch call | `computed` ref watched by `useAsyncData` |
+| **Error handling** | Try/catch with manual error ref | Built-in `error` ref from `useAsyncData` |
+| **Caching** | Manual (or use libraries like TanStack Query) | Built-in via Nuxt's `useAsyncData` key-based cache |
 
 ---
 
