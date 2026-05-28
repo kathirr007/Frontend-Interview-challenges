@@ -3,25 +3,22 @@
 Assesement link: https://degreed.com/plan/2983559
 
 https://degreed.com/pathway/1pn0je67pn/pathway
-
 https://capgemini.udemy.com/course/generative-ai-architectures-with-llm-prompt-rag-vector-db/learn/quiz/6645891#overview - completed
-
 https://capgemini.udemy.com/course/ai-governance-the-fundamentals-of-ai-governance/learn/lecture/53067067#overview - completed
-
 https://capgemini.udemy.com/learning-paths/11108547 - completed
 
 ### Prompt Engineering
 
 Assesement link: https://degreed.com/plan/3669909
 
-1. https://capgemini.udemy.com/course/prompt-engineering-for-everyone-bootcamp/learn/lecture/50569767#overview
+1. https://capgemini.udemy.com/course/prompt-engineering-for-everyone-bootcamp/learn/lecture/50569767#overview - completed
 2. https://capgemini.udemy.com/course/prompt-engineering-frameworks/learn/lecture/51510283#overview - completed
 3. https://capgemini.udemy.com/course/prompt-perfect/learn/lecture/47731355#overview - completed
 4. https://capgemini.udemy.com/course/chatgpt-a-master-guide-for-professionals/learn/lecture/38559038#overview
 5. https://capgemini.udemy.com/course/github-copilot/learn/lecture/54062401#overview
-6. https://capgemini.udemy.com/learning-paths/11097055/
-7. https://capgemini.udemy.com/learning-paths/11100685
-8. https://capgemini.udemy.com/learning-paths/11177465
+6. https://capgemini.udemy.com/learning-paths/11097055 - completed
+7. https://capgemini.udemy.com/learning-paths/11100685 - 
+8. https://capgemini.udemy.com/learning-paths/11177465 - 
 
 ### Agentic AI (Beginner)
 
