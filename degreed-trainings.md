@@ -1,4 +1,7 @@
 ### Core Generative AI (Beginner)
+
+Assesement link: https://degreed.com/plan/2983559
+
 https://degreed.com/pathway/1pn0je67pn/pathway
 
 https://capgemini.udemy.com/course/generative-ai-architectures-with-llm-prompt-rag-vector-db/learn/quiz/6645891#overview - completed
@@ -21,6 +24,9 @@ Assesement link: https://degreed.com/plan/3669909
 8. https://capgemini.udemy.com/learning-paths/11177465
 
 ### Agentic AI (Beginner)
+
+Assesement link: https://degreed.com/plan/3660882
+
 1. https://capgemini.udemy.com/course/intro-to-ai-agents-and-agentic-ai/learn/lecture/52159201#overview
 2. https://capgemini.udemy.com/course/complete-mcp-developer-guide-ai-agents-servers-tools/learn/lecture/52104589#overview
 3. https://capgemini.udemy.com/course/ai-agents-workflows-the-practical-guide/learn/lecture/51102807#overview
