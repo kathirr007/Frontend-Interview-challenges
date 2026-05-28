@@ -2,10 +2,10 @@
 
 Assesement link: https://degreed.com/plan/2983559
 
-https://degreed.com/pathway/1pn0je67pn/pathway
-https://capgemini.udemy.com/course/generative-ai-architectures-with-llm-prompt-rag-vector-db/learn/quiz/6645891#overview - completed
-https://capgemini.udemy.com/course/ai-governance-the-fundamentals-of-ai-governance/learn/lecture/53067067#overview - completed
-https://capgemini.udemy.com/learning-paths/11108547 - completed
+1. https://degreed.com/pathway/1pn0je67pn/pathway
+2. https://capgemini.udemy.com/course/generative-ai-architectures-with-llm-prompt-rag-vector-db/learn/quiz/6645891#overview - completed
+3. https://capgemini.udemy.com/course/ai-governance-the-fundamentals-of-ai-governance/learn/lecture/53067067#overview - completed
+4. https://capgemini.udemy.com/learning-paths/11108547 - completed
 
 ### Prompt Engineering
 
