@@ -12,3 +12,11 @@ intro:
   aka: Also known as
   whats-your-name: What's your name?
 not-found: Not found
+challenges:
+  beginner: Beginner
+  intermediate: Intermediate
+  advanced: Advanced
+  start: Start Challenge
+  completed: Completed
+  progress: Progress
+  total: Total Challenges

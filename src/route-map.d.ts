@@ -40,18 +40,25 @@ declare module 'vue-router/auto-routes' {
       { all: ParamValue<false> },
       | never
     >,
-    '/about': RouteRecordInfo<
-      '/about',
-      '/about',
+    '/advanced': RouteRecordInfo<
+      '/advanced',
+      '/advanced',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
-    '/hi/[name]': RouteRecordInfo<
-      '/hi/[name]',
-      '/hi/:name',
-      { name: ParamValue<true> },
-      { name: ParamValue<false> },
+    '/beginner': RouteRecordInfo<
+      '/beginner',
+      '/beginner',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/intermediate': RouteRecordInfo<
+      '/intermediate',
+      '/intermediate',
+      Record<never, never>,
+      Record<never, never>,
       | never
     >,
     '/README': RouteRecordInfo<
@@ -86,15 +93,21 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/about.md': {
+    'src/pages/advanced.vue': {
       routes:
-        | '/about'
+        | '/advanced'
       views:
         | never
     }
-    'src/pages/hi/[name].vue': {
+    'src/pages/beginner.vue': {
       routes:
-        | '/hi/[name]'
+        | '/beginner'
+      views:
+        | never
+    }
+    'src/pages/intermediate.vue': {
+      routes:
+        | '/intermediate'
       views:
         | never
     }
