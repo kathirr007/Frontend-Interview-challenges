@@ -1,5 +1,13 @@
 # Senior UI Developer Interview Questions & Answers
 
+## Table of Contents
+- [HTML & CSS](#html--css)
+- [SCSS (Sass)](#scss-sass)
+- [JavaScript](#javascript)
+- [TypeScript](#typescript)
+- [Vue.js](#vuejs)
+- [Nuxt.js](#nuxtjs)
+
 ## HTML & CSS
 
 ### Q1: Explain semantic HTML and its importance.
@@ -348,7 +356,7 @@ Example of Teleport:
 ### Q7: How do you handle form validation in Vue 3?
 **A:** Use Composition API with refs and computed values or third-party libraries like VeeValidate:
 
-```vue
+``vue
 <script setup>
 import { ref, computed } from 'vue';
 
