@@ -15,7 +15,7 @@ Assesement link: https://degreed.com/plan/3669909
 2. https://capgemini.udemy.com/course/prompt-engineering-frameworks/learn/lecture/51510283#overview - completed
 3. https://capgemini.udemy.com/course/prompt-perfect/learn/lecture/47731355#overview - completed
 4. https://capgemini.udemy.com/course/chatgpt-a-master-guide-for-professionals/learn/lecture/38559038#overview - completed
-5. https://capgemini.udemy.com/course/github-copilot/learn/lecture/54062401#overview
+5. https://capgemini.udemy.com/course/github-copilot/learn/lecture/54062401#overview - completed
 6. https://capgemini.udemy.com/learning-paths/11097055 - completed
 7. https://capgemini.udemy.com/learning-paths/11100685 - completed
 8. https://capgemini.udemy.com/learning-paths/11177465 - completed
