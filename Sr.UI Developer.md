@@ -7,6 +7,8 @@
 - [TypeScript](#typescript)
 - [Vue.js](#vuejs)
 - [Nuxt.js](#nuxtjs)
+- [AI-Assisted Development](#ai-assisted-development)
+- [AI-Assisted Debugging Scenarios (Live Coding Exercise)](#ai-assisted-debugging-scenarios-live-coding-exercise)
 
 ## HTML & CSS
 
