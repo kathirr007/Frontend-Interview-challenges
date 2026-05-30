@@ -24,10 +24,10 @@ Assesement link: https://degreed.com/plan/3669909
 
 Assesement link: https://degreed.com/plan/3660882
 
-1. https://capgemini.udemy.com/course/intro-to-ai-agents-and-agentic-ai/learn/lecture/52159201#overview
-2. https://capgemini.udemy.com/course/complete-mcp-developer-guide-ai-agents-servers-tools/learn/lecture/52104589#overview
-3. https://capgemini.udemy.com/course/ai-agents-workflows-the-practical-guide/learn/lecture/51102807#overview
-4. https://capgemini.udemy.com/course/explainable-ai-xai-for-generative-ai/learn/lecture/48177063#overview
+1. https://capgemini.udemy.com/course/intro-to-ai-agents-and-agentic-ai/learn/lecture/52159201#overview - completed
+2. https://capgemini.udemy.com/course/complete-mcp-developer-guide-ai-agents-servers-tools/learn/lecture/52104589#overview - completed
+3. https://capgemini.udemy.com/course/ai-agents-workflows-the-practical-guide/learn/lecture/51102807#overview - completed
+4. https://capgemini.udemy.com/course/explainable-ai-xai-for-generative-ai/learn/lecture/48177063#overview - completed
 
 ### Claude AI - Basic 
 1. https://anthropic.skilljar.com/ai-fluency-framework-foundations
@@ -37,7 +37,7 @@ Assesement link: https://degreed.com/plan/3660882
 5. https://capgemini.udemy.com/course/python-for-absolute-beginners-u/learn/lecture/16715424#overview
 6. https://capgemini.udemy.com/course/claude-code-the-practical-guide/learn/lecture/54529167#overview
 
-### Claude AI - Basic Advanced
+### Claude AI - Advanced
 1. https://anthropic.skilljar.com/introduction-to-agent-skills
 2. https://capgemini.udemy.com/course/how-to-build-ai-agents/learn/lecture/44085096#overview
 3. https://anthropic.skilljar.com/introduction-to-model-context-protocol
