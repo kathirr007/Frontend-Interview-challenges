@@ -1,5 +1,15 @@
 # Senior UI Developer Interview Questions & Answers
 
+## Table of Contents
+- [HTML & CSS](#html--css)
+- [SCSS (Sass)](#scss-sass)
+- [JavaScript](#javascript)
+- [TypeScript](#typescript)
+- [Vue.js](#vuejs)
+- [Nuxt.js](#nuxtjs)
+- [AI-Assisted Development](#ai-assisted-development)
+- [AI-Assisted Debugging Scenarios (Live Coding Exercise)](#ai-assisted-debugging-scenarios-live-coding-exercise)
+
 ## HTML & CSS
 
 ### Q1: Explain semantic HTML and its importance.
@@ -875,7 +885,7 @@ Example of Teleport:
 
 **A:** Use Composition API with refs and computed values or third-party libraries like VeeValidate:
 
-```vue
+``vue
 <script setup>
 import { computed, ref } from 'vue'
 

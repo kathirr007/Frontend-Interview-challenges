@@ -6,6 +6,9 @@ export default antfu(
     unocss: false,
     formatters: true,
     pnpm: true,
+    rules: {
+      'eslint-comments/no-unlimited-disable': 'off',
+    },
   },
   {
     files: ['**/*.md'],
