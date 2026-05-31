@@ -11,17 +11,11 @@ export default antfu(
     },
   },
   {
-    files: ['**/*.md'],
-    rules: {
-      'markdown/heading-increment': 'off',
-    },
-  },
-  {
     ignores: [
       'dist',
       'node_modules',
       '.vite',
-      'Sr.UI Developer.md',
+      '**/*.md',
     ],
   },
 )

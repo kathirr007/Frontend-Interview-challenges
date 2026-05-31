@@ -7,6 +7,8 @@
 - [TypeScript](#typescript)
 - [Vue.js](#vuejs)
 - [Nuxt.js](#nuxtjs)
+- [React.js](#reactjs)
+- [Next.js](#nextjs)
 - [AI-Assisted Development](#ai-assisted-development)
 - [AI-Assisted Debugging Scenarios (Live Coding Exercise)](#ai-assisted-debugging-scenarios-live-coding-exercise)
 
@@ -724,15 +726,15 @@ async function createUser(user: CreateUserRequest): Promise<User> {
     },
     body: JSON.stringify(user),
   })
-  return response.json()
+  return response
 }
 ```
 
-## Vue.js
+---
 
-### Q1: Explain Vue's reactivity system.
+**Note:** For comprehensive React.js and Next.js interview questions covering component lifecycle, hooks, performance optimization, data fetching strategies, authentication patterns, middleware, SEO, and modern App Router concepts, please refer to the dedicated guide: [React-Next-Interview-Guide.md](./React-Next-Interview-Guide.md)
 
-**A:** Vue 3 uses Proxies to make data reactive, replacing the getter/setter approach of Vue 2. This enables more efficient tracking of property access and allows reactivity on objects, arrays, and primitive values without limitations. The system tracks dependencies during template rendering and updates the DOM when data changes.
+## AI-Assisted Development
 
 ### Q2: What are Vue components and how do you create them?
 
