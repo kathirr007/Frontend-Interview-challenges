@@ -1,3 +1,4 @@
+
 ## Next.js
 
 ### Q1: What is Next.js and what are its key features compared to plain React?

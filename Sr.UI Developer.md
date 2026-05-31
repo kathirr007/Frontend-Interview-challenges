@@ -7,8 +7,8 @@
 - [TypeScript](#typescript)
 - [Vue.js](#vuejs)
 - [Nuxt.js](#nuxtjs)
-- [React.js](#reactjs)
-- [Next.js](#nextjs)
+- [React.js](./React-Interview-Guide.md)
+- [Next.js](./Next-Interview-Guide.md)
 - [AI-Assisted Development](#ai-assisted-development)
 - [AI-Assisted Debugging Scenarios (Live Coding Exercise)](#ai-assisted-debugging-scenarios-live-coding-exercise)
 
