@@ -30,12 +30,12 @@ Assesement link: https://degreed.com/plan/3660882
 4. https://capgemini.udemy.com/course/explainable-ai-xai-for-generative-ai/learn/lecture/48177063#overview - completed
 
 ### Claude AI - Basic 
-1. https://anthropic.skilljar.com/ai-fluency-framework-foundations
-2. https://anthropic.skilljar.com/claude-101
-3. https://capgemini.udemy.com/course/intro-to-claude-3-35-4-sonnet-business-applications-api/learn/lecture/44612713#overview
-4. https://capgemini.udemy.com/course/prompt-engineering-using-claude/learn/lecture/44219602#overview
+1. https://anthropic.skilljar.com/ai-fluency-framework-foundations - completed
+2. https://anthropic.skilljar.com/claude-101 - completed
+3. https://capgemini.udemy.com/course/intro-to-claude-3-35-4-sonnet-business-applications-api/learn/lecture/44612713#overview - completed
+4. https://capgemini.udemy.com/course/prompt-engineering-using-claude/learn/lecture/44219602#overview - completed
 5. https://capgemini.udemy.com/course/python-for-absolute-beginners-u/learn/lecture/16715424#overview
-6. https://capgemini.udemy.com/course/claude-code-the-practical-guide/learn/lecture/54529167#overview
+6. https://capgemini.udemy.com/course/claude-code-the-practical-guide/learn/lecture/54529167#overview - completed
 
 ### Claude AI - Advanced
 1. https://anthropic.skilljar.com/introduction-to-agent-skills
