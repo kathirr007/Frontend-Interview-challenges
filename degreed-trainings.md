@@ -29,7 +29,8 @@ Assesement link: https://degreed.com/plan/3660882
 3. https://capgemini.udemy.com/course/ai-agents-workflows-the-practical-guide/learn/lecture/51102807#overview
 4. https://capgemini.udemy.com/course/explainable-ai-xai-for-generative-ai/learn/lecture/48177063#overview
 
-### Claude AI - Basic 
+### Claude AI - Basic
+
 1. https://anthropic.skilljar.com/ai-fluency-framework-foundations
 2. https://anthropic.skilljar.com/claude-101
 3. https://capgemini.udemy.com/course/intro-to-claude-3-35-4-sonnet-business-applications-api/learn/lecture/44612713#overview
@@ -38,6 +39,7 @@ Assesement link: https://degreed.com/plan/3660882
 6. https://capgemini.udemy.com/course/claude-code-the-practical-guide/learn/lecture/54529167#overview
 
 ### Claude AI - Basic Advanced
+
 1. https://anthropic.skilljar.com/introduction-to-agent-skills
 2. https://capgemini.udemy.com/course/how-to-build-ai-agents/learn/lecture/44085096#overview
 3. https://anthropic.skilljar.com/introduction-to-model-context-protocol

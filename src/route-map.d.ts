@@ -54,6 +54,27 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/challenges/beginner/[id]': RouteRecordInfo<
+      '/challenges/beginner/[id]',
+      '/challenges/beginner/:id',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
+      | never
+    >,
+    '/challenges/beginner/02': RouteRecordInfo<
+      '/challenges/beginner/02',
+      '/challenges/beginner/02',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/challenges/beginner/03': RouteRecordInfo<
+      '/challenges/beginner/03',
+      '/challenges/beginner/03',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/intermediate': RouteRecordInfo<
       '/intermediate',
       '/intermediate',
@@ -102,6 +123,24 @@ declare module 'vue-router/auto-routes' {
     'src/pages/beginner.vue': {
       routes:
         | '/beginner'
+      views:
+        | never
+    }
+    'src/pages/challenges/beginner/[id].vue': {
+      routes:
+        | '/challenges/beginner/[id]'
+      views:
+        | never
+    }
+    'src/pages/challenges/beginner/02.vue': {
+      routes:
+        | '/challenges/beginner/02'
+      views:
+        | never
+    }
+    'src/pages/challenges/beginner/03.vue': {
+      routes:
+        | '/challenges/beginner/03'
       views:
         | never
     }

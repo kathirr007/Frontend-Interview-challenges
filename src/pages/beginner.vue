@@ -75,6 +75,76 @@ const challenges: Challenge[] = [
     difficulty: 'beginner',
     topics: ['Conditional Rendering', 'Event Handling', 'Dynamic Classes'],
   },
+  {
+    id: 9,
+    title: 'Shopping Cart Display',
+    description: 'Display items in a shopping cart with quantity controls and total calculation.',
+    difficulty: 'beginner',
+    topics: ['v-for', 'Computed Properties', 'Array Methods'],
+  },
+  {
+    id: 10,
+    title: 'Search Filter',
+    description: 'Implement a search box that filters a list of items in real-time.',
+    difficulty: 'beginner',
+    topics: ['v-model', 'Computed Properties', 'String Methods'],
+  },
+  {
+    id: 11,
+    title: 'Accordion Component',
+    description: 'Create an accordion UI where clicking headers expands/collapses content.',
+    difficulty: 'beginner',
+    topics: ['Conditional Rendering', 'Event Handling', 'Dynamic Classes'],
+  },
+  {
+    id: 12,
+    title: 'Star Rating System',
+    description: 'Build an interactive star rating component with hover and click effects.',
+    difficulty: 'beginner',
+    topics: ['Event Handling', 'Dynamic Styling', 'Component Props'],
+  },
+  {
+    id: 13,
+    title: 'Digital Clock',
+    description: 'Create a digital clock that updates every second using Vue reactivity.',
+    difficulty: 'beginner',
+    topics: ['Lifecycle Hooks', 'setInterval', 'Date Object'],
+  },
+  {
+    id: 14,
+    title: 'Color Picker',
+    description: 'Build a color picker with RGB sliders that display the selected color.',
+    difficulty: 'beginner',
+    topics: ['v-model', 'Inline Styles', 'Computed Properties'],
+  },
+  {
+    id: 15,
+    title: 'Quiz App',
+    description: 'Create a simple quiz with multiple choice questions and score tracking.',
+    difficulty: 'beginner',
+    topics: ['Conditional Rendering', 'Event Handling', 'State Management'],
+  },
+  {
+    id: 16,
+    title: 'Markdown Previewer',
+    description: 'Build a markdown editor with live preview using a simple parser.',
+    difficulty: 'beginner',
+    topics: ['v-model', 'Computed Properties', 'String Manipulation'],
+  },
+  {
+    id: 17,
+    title: 'Expense Tracker',
+    description: 'Track expenses with add/delete functionality and total calculation.',
+    difficulty: 'beginner',
+    topics: ['Forms', 'v-for', 'Array Methods', 'Computed Properties'],
+  },
+  {
+    id: 18,
+    title: 'Password Strength Checker',
+    description: 'Create a password input with visual strength indicator.',
+    difficulty: 'beginner',
+    topics: ['v-model', 'Computed Properties', 'Regular Expressions'],
+  },
 ]
 </script>
 
@@ -130,10 +200,11 @@ const challenges: Challenge[] = [
 
     <!-- Challenges Grid -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 md:grid-cols-2">
-      <div
+      <RouterLink
         v-for="challenge in challenges"
         :key="challenge.id"
-        class="group border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 dark:border-gray-700 hover:border-green-500 hover:shadow-md dark:hover:border-green-400"
+        :to="`/challenges/beginner/${String(challenge.id).padStart(2, '0')}`"
+        class="group block border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 dark:border-gray-700 hover:border-green-500 hover:shadow-md dark:hover:border-green-400"
       >
         <div class="mb-3 flex items-start justify-between">
           <span class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 font-semibold dark:bg-green-900 dark:text-green-300">
@@ -167,7 +238,7 @@ const challenges: Challenge[] = [
         <button class="w-full rounded-lg bg-green-500 px-4 py-2 text-white font-semibold transition-colors hover:bg-green-600">
           Start Challenge
         </button>
-      </div>
+      </RouterLink>
     </div>
   </div>
 </template>

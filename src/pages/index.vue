@@ -24,7 +24,7 @@ const categories: ChallengeCategory[] = [
     title: 'Beginner Challenges',
     description: 'Perfect for those just starting with Vue.js. Learn fundamentals like reactivity, components, and basic directives.',
     icon: 'i-carbon-idea',
-    count: 15,
+    count: 18,
     difficulty: 'beginner',
   },
   {
