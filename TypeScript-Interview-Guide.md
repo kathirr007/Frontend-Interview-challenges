@@ -2119,4 +2119,4 @@ Solutions for these exercises are available in the `/exercises/typescript-soluti
 
 ---
 
-**Note:** For comprehensive React.js and Next.js interview questions covering component lifecycle, hooks, performance optimization, data fetching strategies, authentication patterns, middleware, SEO, and modern App Router concepts, please refer to the dedicated guide: [React-Next-Interview-Guide.md](./React-Next-Interview-Guide.md)
+**Note:** For comprehensive Vue.js, Nuxt.js, React.js and Next.js interview questions covering component lifecycle, hooks, performance optimization, data fetching strategies, authentication patterns, middleware, SEO, and modern App Router concepts, please refer to the dedicated guide: [Vue-Interview-Guide](./Vue-Interview-Guide.md), [Nuxt-Interview-Guide](./Nuxt-Interview-Guide.md), [React-Interview-Guide](./React-Interview-Guide.md) and [Next-Interview-Guide](./Next-Interview-Guide.md).
