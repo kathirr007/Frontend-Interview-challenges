@@ -1,4 +1,4 @@
-﻿# Senior UI Developer Interview Questions & Answers
+# Senior UI Developer Interview Questions & Answers
 
 ## Overview
 
@@ -10,7 +10,7 @@ This repository contains comprehensive interview preparation materials for Senio
 - [HTML & CSS](./HTML-CSS-Interview-Guide.md) - 15 questions covering semantic HTML, responsive design, box model, specificity, Flexbox, Grid, accessibility, and more
 - [SCSS (Sass)](./SCSS-Interview-Guide.md) - 10 questions on variables, nesting, mixins, maps, BEM methodology, and performance optimization
 - [JavaScript](./JavaScript-Interview-Guide.md) - 8 questions on closures, event delegation, promises, async/await, event loop, and prototypal inheritance
-- [TypeScript](./TypeScript-Interview-Guide.md) - 4 questions on static typing, interfaces vs types, optional parameters, and API integration typing
+- [TypeScript](./TypeScript-Interview-Guide.md) - 20 comprehensive questions covering static typing, interfaces vs types, generics, utility types, union types, mapped types, discriminated unions, Vue component props, composables, Pinia stores, Nuxt API endpoints, type-safe routing, TypeScript configuration, declaration files, template literal types, event emitters, form handling, and performance optimization
 
 ### Frontend Frameworks
 - [Vue.js](./Vue-Interview-Guide.md) - 11 questions covering Composition API, lifecycle hooks, state management with Pinia, API calls, authentication, error handling, pagination, and infinite scrolling
