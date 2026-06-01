@@ -36,7 +36,7 @@ This repository contains comprehensive interview preparation materials for Senio
 
 ## File Structure
 
-`
+```
 Frontend-Interview-challenges/
 ├── Sr.UI Developer.md                    # This file (index/TOC)
 ├── HTML-CSS-Interview-Guide.md           # HTML & CSS Q&A
@@ -49,7 +49,7 @@ Frontend-Interview-challenges/
 ├── Next-Interview-Guide.md               # Next.js comprehensive guide
 ├── AI-Assisted-Development-Guide.md      # AI development practices
 └── AI-Debugging-Scenarios.md             # Live coding exercises
-`
+```
 
 ## Contributing
 
