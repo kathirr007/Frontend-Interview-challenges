@@ -2,7 +2,7 @@
 
 Assesement link: https://degreed.com/plan/2983559
 
-1. https://degreed.com/pathway/1pn0je67pn/pathway
+1. https://degreed.com/pathway/1pn0je67pn/pathway - completed
 2. https://capgemini.udemy.com/course/generative-ai-architectures-with-llm-prompt-rag-vector-db/learn/quiz/6645891#overview - completed
 3. https://capgemini.udemy.com/course/ai-governance-the-fundamentals-of-ai-governance/learn/lecture/53067067#overview - completed
 4. https://capgemini.udemy.com/learning-paths/11108547 - completed
@@ -35,13 +35,13 @@ Assesement link: https://degreed.com/plan/3660882
 2. https://anthropic.skilljar.com/claude-101 - completed
 3. https://capgemini.udemy.com/course/intro-to-claude-3-35-4-sonnet-business-applications-api/learn/lecture/44612713#overview - completed
 4. https://capgemini.udemy.com/course/prompt-engineering-using-claude/learn/lecture/44219602#overview - completed
-5. https://capgemini.udemy.com/course/python-for-absolute-beginners-u/learn/lecture/16715424#overview
+5. https://capgemini.udemy.com/course/python-for-absolute-beginners-u/learn/lecture/16715424#overview - completed
 6. https://capgemini.udemy.com/course/claude-code-the-practical-guide/learn/lecture/54529167#overview - completed
 
 ### Claude AI - Advanced
 
-1. https://anthropic.skilljar.com/introduction-to-agent-skills
-2. https://capgemini.udemy.com/course/how-to-build-ai-agents/learn/lecture/44085096#overview
+1. https://anthropic.skilljar.com/introduction-to-agent-skills - completed
+2. https://capgemini.udemy.com/course/how-to-build-ai-agents/learn/lecture/44085096#overview - completed
 3. https://anthropic.skilljar.com/introduction-to-model-context-protocol
-4. https://capgemini.udemy.com/course/claude-code-generative-ai-assisted-development/learn/lecture/53402389#overview
+4. https://capgemini.udemy.com/course/claude-code-generative-ai-assisted-development/learn/lecture/53402389#overview - completed
 5. https://anthropic.skilljar.com/claude-with-google-vertex
