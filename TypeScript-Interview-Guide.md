@@ -177,7 +177,7 @@ const getUserBasicInfo = (user: User): UserBasicInfo => {
 Example:
 
 ```typescript
-type Shape = 
+type Shape =
   | { kind: 'circle'; radius: number }
   | { kind: 'square'; side: number }
   | { kind: 'rectangle'; width: number; height: number }
@@ -366,7 +366,7 @@ const props = defineProps<CardProps>()
 
 Example:
 
-```typescript
+``typescript
 // composables/useFetch.ts
 import { ref, type Ref } from 'vue'
 
@@ -455,7 +455,7 @@ const { data, loading, error } = useFetch<User[]>('/api/users', {
 
 Example:
 
-```typescript
+``typescript
 // stores/user.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
@@ -720,7 +720,7 @@ interface User {
 ```typescript
 // Composable for type-safe navigation
 // composables/useNavigation.ts
-type RouteName = 
+type RouteName =
   | 'home'
   | 'users'
   | 'user-detail'
@@ -825,7 +825,7 @@ export default defineNuxtConfig({
     typeCheck: true, // Enable type checking during dev
     shim: true // Generate shims for .vue files
   },
-  
+
   // Enable auto-imports for composables
   imports: {
     dirs: ['composables/**']
@@ -887,7 +887,7 @@ type ApiResource = 'users' | 'posts' | 'comments'
 type ApiEndpoint = `/api/${ApiResource}`
 
 // Dynamic route types
-type RoutePath = 
+type RoutePath =
   | '/'
   | '/about'
   | `/users/${number}`
@@ -1258,7 +1258,7 @@ export default defineNuxtConfig({
     typeCheck: false, // Disable during dev, enable in CI
     shim: true
   },
-  
+
   vite: {
     esbuild: {
       tsconfigRaw: {
@@ -1270,6 +1270,852 @@ export default defineNuxtConfig({
   }
 })
 ```
+
+---
+
+## Practical Exercises
+
+### Exercise 1: Type-Safe API Client
+
+**Objective:** Create a fully type-safe HTTP client for making API requests.
+
+**Requirements:**
+- Support GET, POST, PUT, DELETE methods
+- Automatic response type inference
+- Error handling with typed errors
+- Request/response interceptors
+- Timeout configuration
+
+**Starter Code:**
+
+```typescript
+// TODO: Implement this interface
+interface ApiClient {
+  get<T>(url: string, config?: RequestConfig): Promise<T>
+  post<T>(url: string, data: any, config?: RequestConfig): Promise<T>
+  put<T>(url: string, data: any, config?: RequestConfig): Promise<T>
+  delete<T>(url: string, config?: RequestConfig): Promise<T>
+}
+
+interface RequestConfig {
+  headers?: Record<string, string>
+  timeout?: number
+  params?: Record<string, any>
+}
+
+interface ApiError {
+  status: number
+  message: string
+  code?: string
+  details?: Record<string, any>
+}
+```
+
+**Expected Usage:**
+
+```typescript
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
+const api = createApiClient({ baseURL: 'https://api.example.com' })
+
+// Should infer return type as User
+const user = await api.get<User>('/users/1')
+
+// Should validate request body type
+await api.post<User>('/users', {
+  name: 'John Doe',
+  email: 'john@example.com'
+})
+```
+
+**Solution Template:**
+
+```typescript
+class TypedApiClient implements ApiClient {
+  private baseURL: string
+  private defaultTimeout: number
+
+  constructor(config: { baseURL: string; timeout?: number }) {
+    this.baseURL = config.baseURL
+    this.defaultTimeout = config.timeout || 5000
+  }
+
+  async get<T>(url: string, config?: RequestConfig): Promise<T> {
+    // Implementation here
+  }
+
+  async post<T>(url: string, data: any, config?: RequestConfig): Promise<T> {
+    // Implementation here
+  }
+
+  async put<T>(url: string, data: any, config?: RequestConfig): Promise<T> {
+    // Implementation here
+  }
+
+  async delete<T>(url: string, config?: RequestConfig): Promise<T> {
+    // Implementation here
+  }
+
+  private async request<T>(
+    method: string,
+    url: string,
+    options?: { data?: any; config?: RequestConfig }
+  ): Promise<T> {
+    // Common request logic with error handling
+  }
+
+  private handleError(response: Response): never {
+    // Convert HTTP errors to typed ApiError
+  }
+}
+
+export function createApiClient(config: { baseURL: string; timeout?: number }): ApiClient {
+  return new TypedApiClient(config)
+}
+```
+
+---
+
+### Exercise 2: Generic Repository Pattern
+
+**Objective:** Implement a generic repository pattern with TypeScript for database operations.
+
+**Requirements:**
+- CRUD operations with proper typing
+- Support for filtering and pagination
+- Type-safe query building
+- Soft delete support
+
+**Starter Code:**
+
+```typescript
+interface BaseEntity {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date
+}
+
+interface User extends BaseEntity {
+  name: string
+  email: string
+  role: 'admin' | 'user' | 'moderator'
+}
+
+interface Post extends BaseEntity {
+  title: string
+  content: string
+  authorId: number
+  published: boolean
+}
+
+// TODO: Implement this interface
+interface Repository<T extends BaseEntity> {
+  findById(id: number): Promise<T | null>
+  findAll(options?: QueryOptions<T>): Promise<T[]>
+  create(data: Omit<T, 'id' | 'createdAt' | 'updatedAt'>): Promise<T>
+  update(id: number, data: Partial<T>): Promise<T>
+  delete(id: number): Promise<void>
+  softDelete(id: number): Promise<void>
+  restore(id: number): Promise<void>
+}
+
+interface QueryOptions<T> {
+  where?: Partial<T>
+  orderBy?: keyof T
+  order?: 'asc' | 'desc'
+  page?: number
+  limit?: number
+}
+```
+
+**Expected Usage:**
+
+```typescript
+const userRepository = new UserRepository()
+
+// Create user
+const user = await userRepository.create({
+  name: 'John Doe',
+  email: 'john@example.com',
+  role: 'user'
+})
+
+// Find with filters
+const admins = await userRepository.findAll({
+  where: { role: 'admin' },
+  orderBy: 'name',
+  order: 'asc'
+})
+
+// Pagination
+const paginatedUsers = await userRepository.findAll({
+  page: 2,
+  limit: 10
+})
+
+// Soft delete
+await userRepository.softDelete(user.id)
+
+// Restore
+await userRepository.restore(user.id)
+```
+
+**Key Concepts to Implement:**
+- Generic constraints (`T extends BaseEntity`)
+- Utility types (`Omit`, `Partial`, `Pick`)
+- Conditional types for optional parameters
+- Type guards for runtime checks
+
+---
+
+### Exercise 3: Vue 3 Composable with TypeScript
+
+**Objective:** Create a reusable composable for managing form state with validation in Vue 3.
+
+**Requirements:**
+- Type-safe form fields
+- Built-in validators (required, email, minLength, etc.)
+- Custom validator support
+- Async validation support
+- Form submission handling
+
+**Starter Code:**
+
+```typescript
+import { ref, computed, type Ref } from 'vue'
+
+interface Validator<T> {
+  validate: (value: T) => boolean | Promise<boolean>
+  message: string
+}
+
+interface FormField<T> {
+  value: Ref<T>
+  error: Ref<string | null>
+  touched: Ref<boolean>
+  validators: Validator<T>[]
+}
+
+// TODO: Implement this composable
+export function useForm<T extends Record<string, any>>(
+  initialValues: T,
+  validators?: Partial<{
+    [K in keyof T]: Validator<T[K]>[]
+  }>
+) {
+  // Your implementation here
+
+  return {
+    fields: {}, // Typed form fields
+    isValid: computed(() => false),
+    isSubmitting: ref(false),
+    validate: () => Promise.resolve(false),
+    submit: (handler: (values: T) => Promise<void>) => Promise.resolve(),
+    reset: () => {}
+  }
+}
+```
+
+**Expected Usage:**
+
+```html
+<script setup lang="ts">
+import { useForm } from '@/composables/useForm'
+
+interface LoginForm {
+  email: string
+  password: string
+}
+
+const { fields, isValid, isSubmitting, submit } = useForm<LoginForm>(
+  {
+    email: '',
+    password: ''
+  },
+  {
+    email: [
+      {
+        validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        message: 'Invalid email address'
+      }
+    ],
+    password: [
+      {
+        validate: (value) => value.length >= 8,
+        message: 'Password must be at least 8 characters'
+      }
+    ]
+  }
+)
+
+async function handleLogin(values: LoginForm) {
+  await fetch('/api/login', {
+    method: 'POST',
+    body: JSON.stringify(values)
+  })
+}
+</script>
+
+<template>
+  <form @submit.prevent="submit(handleLogin)">
+    <div>
+      <input v-model="fields.email.value" placeholder="Email">
+      <span v-if="fields.email.error">{{ fields.email.error }}</span>
+    </div>
+
+    <div>
+      <input v-model="fields.password.value" type="password" placeholder="Password">
+      <span v-if="fields.password.error">{{ fields.password.error }}</span>
+    </div>
+
+    <button :disabled="!isValid || isSubmitting" type="submit">
+      {{ isSubmitting ? 'Logging in...' : 'Login' }}
+    </button>
+  </form>
+</template>
+```
+
+**Bonus Challenges:**
+1. Add async validation (e.g., check if email exists)
+2. Implement field dependencies (e.g., confirm password must match password)
+3. Add debounced validation
+4. Support nested forms
+
+---
+
+### Exercise 4: Nuxt 3 Type-Safe API Routes
+
+**Objective:** Build a complete CRUD API for a blog system with full TypeScript support.
+
+**Requirements:**
+- RESTful endpoints for posts and comments
+- Request validation with Zod
+- Proper error responses
+- Authentication middleware
+- Pagination support
+
+**File Structure:**
+
+```
+server/
+├── api/
+│   ├── posts/
+│   │   ├── index.get.ts      # List posts
+│   │   ├── index.post.ts     # Create post
+│   │   └── [id]/
+│   │       ├── index.get.ts  # Get post
+│   │       ├── index.put.ts  # Update post
+│   │       └── index.delete.ts # Delete post
+│   └── comments/
+│       ├── index.get.ts      # List comments
+│       └── index.post.ts     # Create comment
+└── middleware/
+    └── auth.ts               # Auth middleware
+```
+
+**Starter Code - Types:**
+
+```typescript
+// types/blog.ts
+export interface Post {
+  id: number
+  title: string
+  content: string
+  authorId: number
+  published: boolean
+  tags: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Comment {
+  id: number
+  postId: number
+  content: string
+  authorId: number
+  createdAt: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface ApiError {
+  success: false
+  error: {
+    code: string
+    message: string
+    details?: Record<string, any>
+  }
+}
+
+export interface ApiSuccess<T> {
+  success: true
+  data: T
+}
+
+export type ApiResponse<T> = ApiSuccess<T> | ApiError
+```
+
+**Implementation Example:**
+
+```typescript
+// server/api/posts/index.get.ts
+import { defineEventHandler, getQuery } from 'h3'
+import { z } from 'zod'
+import type { Post, PaginatedResponse } from '~/types/blog'
+
+const querySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  published: z.coerce.boolean().optional(),
+  tag: z.string().optional()
+})
+
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+
+  try {
+    const validatedQuery = querySchema.parse(query)
+
+    const posts = await db.posts.findMany({
+      where: {
+        published: validatedQuery.published ?? true,
+        tags: validatedQuery.tag ? { has: validatedQuery.tag } : undefined
+      },
+      skip: (validatedQuery.page - 1) * validatedQuery.limit,
+      take: validatedQuery.limit,
+      orderBy: { createdAt: 'desc' }
+    })
+
+    const total = await db.posts.count({
+      where: {
+        published: validatedQuery.published ?? true,
+        tags: validatedQuery.tag ? { has: validatedQuery.tag } : undefined
+      }
+    })
+
+    const response: PaginatedResponse<Post> = {
+      data: posts,
+      total,
+      page: validatedQuery.page,
+      limit: validatedQuery.limit,
+      totalPages: Math.ceil(total / validatedQuery.limit)
+    }
+
+    return {
+      success: true,
+      data: response
+    }
+  }
+  catch (error) {
+    if (error instanceof z.ZodError) {
+      throw createError({
+        statusCode: 400,
+        message: 'Validation error',
+        data: error.errors
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Internal server error'
+    })
+  }
+})
+```
+
+**Frontend Usage:**
+
+```html
+<script setup lang="ts">
+import type { Post, PaginatedResponse } from '~/types/blog'
+
+const route = useRoute()
+const page = computed(() => Number(route.query.page) || 1)
+
+const { data, pending, error, refresh } = await useFetch<PaginatedResponse<Post>>(
+  '/api/posts',
+  {
+    query: {
+      page,
+      limit: 10,
+      published: true
+    }
+  }
+)
+
+
+const posts = computed(() => data.value?.data.data ?? [])
+const pagination = computed(() => data.value?.data)
+</script>
+
+<template>
+  <div>
+    <div v-if="pending">Loading...</div>
+    <div v-else-if="error">Error: {{ error.message }}</div>
+    <div v-else>
+      <article v-for="post in posts" :key="post.id">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content.substring(0, 200) }}...</p>
+      </article>
+
+      <nav v-if="pagination">
+        <button
+          :disabled="pagination.page === 1"
+          @click="$router.push({ query: { page: pagination.page - 1 } })"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ pagination.page }} of {{ pagination.totalPages }}</span>
+
+        <button
+          :disabled="pagination.page >= pagination.totalPages"
+          @click="$router.push({ query: { page: pagination.page + 1 } })"
+        >
+          Next
+        </button>
+      </nav>
+    </div>
+  </div>
+</template>
+```
+
+---
+
+### Exercise 5: Advanced Type Utilities
+
+**Objective:** Create custom TypeScript utility types for common scenarios.
+
+**Tasks:**
+
+1. **DeepPartial**: Make all properties optional recursively
+
+```typescript
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+// Test
+interface Config {
+  database: {
+    host: string
+    port: number
+    credentials: {
+      username: string
+      password: string
+    }
+  }
+  cache: {
+    enabled: boolean
+    ttl: number
+  }
+}
+
+type PartialConfig = DeepPartial<Config>
+// All properties should be optional at every level
+```
+
+2. **ExtractPromiseValue**: Extract the resolved type from a Promise
+
+```typescript
+type ExtractPromiseValue<T> = T extends Promise<infer U> ? U : T
+
+// Test
+type UserPromise = Promise<User>
+type UserType = ExtractPromiseValue<UserPromise> // Should be User
+
+type StringValue = ExtractPromiseValue<string> // Should be string
+```
+
+3. **FunctionParameters**: Extract parameter types from a function
+
+```typescript
+type FunctionParameters<T extends (...args: any[]) => any> =
+  T extends (...args: infer P) => any ? P : never
+
+// Test
+function greet(name: string, age: number, greeting?: string) {}
+type GreetParams = FunctionParameters<typeof greet>
+// Should be [string, number, (string | undefined)?]
+```
+
+4. **UnionToIntersection**: Convert union type to intersection
+
+```typescript
+type UnionToIntersection<U> =
+  (U extends any ? (k: U) => void : never) extends ((k: infer I) => void)
+    ? I
+    : never
+
+// Test
+type A = { a: string }
+type B = { b: number }
+type C = { c: boolean }
+
+type ABC = UnionToIntersection<A | B | C>
+// Should be { a: string } & { b: number } & { c: boolean }
+```
+
+5. **TupleToUnion**: Convert tuple/array to union type
+
+```typescript
+type TupleToUnion<T extends readonly any[]> = T[number]
+
+// Test
+type Colors = readonly ['red', 'green', 'blue']
+type Color = TupleToUnion<Colors>
+// Should be 'red' | 'green' | 'blue'
+```
+
+---
+
+### Exercise 6: Real-World E-commerce System
+
+**Objective:** Build a complete type-safe e-commerce system integrating all concepts.
+
+**Features to Implement:**
+
+1. **Product Management**
+   - Product types with variants (size, color)
+   - Inventory tracking
+   - Price calculations with discounts
+
+2. **Shopping Cart**
+   - Add/remove items
+   - Quantity updates
+   - Total calculation with taxes
+
+3. **Order Processing**
+   - Order creation
+   - Status tracking
+   - Payment integration
+
+4. **User Authentication**
+   - Login/logout
+   - Role-based access
+   - Profile management
+
+**Type Definitions:**
+
+```typescript
+// types/ecommerce.ts
+
+// Products
+export interface ProductVariant {
+  id: number
+  size?: string
+  color?: string
+  sku: string
+  price: number
+  stock: number
+}
+
+export interface Product {
+  id: number
+  name: string
+  description: string
+  category: string
+  images: string[]
+  variants: ProductVariant[]
+  createdAt: string
+}
+
+// Cart
+export interface CartItem {
+  productId: number
+  variantId: number
+  quantity: number
+  price: number
+}
+
+export interface ShoppingCart {
+  items: CartItem[]
+  subtotal: number
+  tax: number
+  total: number
+}
+
+// Orders
+export type OrderStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+
+export interface Order {
+  id: number
+  userId: number
+  items: CartItem[]
+  status: OrderStatus
+  shippingAddress: Address
+  paymentMethod: string
+  total: number
+  createdAt: string
+  updatedAt: string
+}
+
+// Users
+export interface User {
+  id: number
+  email: string
+  name: string
+  role: 'customer' | 'admin'
+  addresses: Address[]
+}
+
+export interface Address {
+  id: number
+  street: string
+  city: string
+  state: string
+  zipCode: string
+  country: string
+}
+```
+
+**Composables to Create:**
+
+```typescript
+// composables/useCart.ts
+export function useCart() {
+  const cart = useState<ShoppingCart>('cart', () => ({
+    items: [],
+    subtotal: 0,
+    tax: 0,
+    total: 0
+  }))
+
+  function addToCart(product: Product, variant: ProductVariant, quantity: number) {
+    // Implementation
+  }
+
+  function removeFromCart(productId: number, variantId: number) {
+    // Implementation
+  }
+
+  function updateQuantity(productId: number, variantId: number, quantity: number) {
+    // Implementation
+  }
+
+  function calculateTotals() {
+    // Implementation
+  }
+
+  return {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    calculateTotals
+  }
+}
+
+// composables/useProducts.ts
+export function useProducts() {
+  const products = ref<Product[]>([])
+  const loading = ref(false)
+  const error = ref<Error | null>(null)
+
+  async function fetchProducts(filters?: {
+    category?: string
+    minPrice?: number
+    maxPrice?: number
+    inStock?: boolean
+  }) {
+    // Implementation
+  }
+
+  async function fetchProduct(id: number) {
+    // Implementation
+  }
+
+  return {
+    products,
+    loading,
+    error,
+    fetchProducts,
+    fetchProduct
+  }
+}
+
+// composables/useOrders.ts
+export function useOrders() {
+  async function createOrder(cart: ShoppingCart, address: Address): Promise<Order> {
+    // Implementation
+  }
+
+  async function fetchOrder(id: number): Promise<Order> {
+    // Implementation
+  }
+
+  async function fetchUserOrders(userId: number): Promise<Order[]> {
+    // Implementation
+  }
+
+  async function updateOrderStatus(orderId: number, status: OrderStatus): Promise<Order> {
+    // Implementation
+  }
+
+  return {
+    createOrder,
+    fetchOrder,
+    fetchUserOrders,
+    updateOrderStatus
+  }
+}
+```
+
+**API Endpoints to Implement:**
+
+```typescript
+// server/api/products/index.get.ts
+// List products with filtering
+
+// server/api/products/[id].get.ts
+// Get single product
+
+// server/api/cart/add.post.ts
+// Add item to cart
+
+// server/api/cart/remove.post.ts
+// Remove item from cart
+
+// server/api/orders/index.post.ts
+// Create order
+
+// server/api/orders/[id].get.ts
+// Get order details
+
+// server/api/orders/user/[userId].get.ts
+// Get user orders
+```
+
+**Evaluation Criteria:**
+- ✅ Proper TypeScript typing throughout
+- ✅ Type-safe API calls
+- ✅ Reusable composables
+- ✅ Error handling with typed errors
+- ✅ State management with Pinia or composables
+- ✅ Validation on both client and server
+- ✅ Clean separation of concerns
+
+---
+
+## Solutions
+
+Solutions for these exercises are available in the `/exercises/typescript-solutions` directory. Try to complete each exercise before reviewing the solutions!
 
 ---
 
