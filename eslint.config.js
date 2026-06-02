@@ -11,6 +11,7 @@ export default antfu(
       'no-console': 'off',
       'vue/no-deprecated-delete-set': 'off',
       'vue/custom-event-name-casing': 'off',
+      'vue/no-deprecated-filter': 'off',
     },
   },
   {

@@ -2,7 +2,10 @@
 
 ## Overview
 
-This evaluation system provides a comprehensive framework for assessing candidates' ability to migrate Vue 2 applications to Vue 3. It includes practical components, detailed guides, and interviewer tools.
+This evaluation system provides **TWO different approaches** for assessing candidates' ability to migrate Vue 2 applications to Vue 3:
+
+1. **Vue2MigrationExample.vue** - Educational component showing all patterns side-by-side
+2. **LegacyVue2Component.vue** - Pure Vue 2 component that BREAKS in Vue 3 (realistic migration scenario)
 
 ---
 
@@ -11,330 +14,594 @@ This evaluation system provides a comprehensive framework for assessing candidat
 ```
 Frontend-Interview-challenges/
 ├── src/components/
-│   ├── Vue2MigrationExample.vue      # Main evaluation component (15 sections)
+│   ├── LegacyVue2Component.vue       # 🔴 PURE VUE 2 - BREAKS IN VUE 3
+│   ├── Vue2MigrationExample.vue      # 🟡 EDUCATIONAL - Shows both versions
 │   └── AsyncExample.vue               # Supporting async component
-├── Vue2-Migration-Evaluation-Guide.md # Comprehensive migration guide with solutions
+├── Vue2-Migration-Evaluation-Guide.md # Comprehensive migration guide
 ├── Vue2-Migration-Interviewer-Checklist.md # Quick reference for interviewers
 └── VUE2-VUE3-MIGRATION-README.md     # This file - system overview
 ```
 
 ---
 
-## What's Included
+## Component Comparison
 
-### 1. **Vue2MigrationExample.vue** 
-A single Vue 2 component demonstrating **15 critical migration scenarios**:
+### 🔴 **LegacyVue2Component.vue** (NEW - Realistic Test)
 
-| Section | Topic | Difficulty |
-|---------|-------|------------|
-| 1 | Options API → Composition API | Beginner |
-| 2 | Reactivity System ($set/$delete) | Beginner |
-| 3 | Lifecycle Hooks Mapping | Beginner |
-| 4 | Props & Emits (.sync removal) | Intermediate |
-| 5 | Filters Removal | Beginner |
-| 6 | Event Bus Replacement | Intermediate |
-| 7 | Template Refs | Beginner |
-| 8 | Mixins → Composables | Intermediate |
-| 9 | Render Function Changes | Advanced |
-| 10 | Custom Directives | Intermediate |
-| 11 | Scoped Slots Syntax | Beginner |
-| 12 | Transition Class Names | Beginner |
-| 13 | Async Components | Intermediate |
-| 14 | Global API Changes | Advanced |
-| 15 | Key Attribute on Templates | Beginner |
+**Purpose:** A pure Vue 2 component that works perfectly in Vue 2 but **will break** when run in Vue 3.
 
-### 2. **Vue2-Migration-Evaluation-Guide.md**
-Comprehensive documentation including:
-- Detailed explanation of each migration section
-- Vue 2 code examples
-- Vue 3 solutions with best practices
-- Evaluation criteria by experience level
-- Sample assessment questions
-- Scoring rubric
+**Characteristics:**
+- ✅ Uses `export default { ... }` (Options API only)
+- ✅ Uses `new Vue()` for event bus
+- ✅ Uses `$set` and `$delete`
+- ✅ Uses Vue 2 filters (`| uppercase`)
+- ✅ Uses `.sync` modifier
+- ✅ Uses Vue 2 lifecycle hooks (`beforeDestroy`, `destroyed`)
+- ✅ Uses Vue 2 directive hooks (`bind`, `inserted`, `update`)
+- ✅ Uses old slot syntax (`slot-scope`)
+- ✅ Uses Vue 2 transition classes (`.slide-enter`)
+- ✅ Uses Vue 2 render function signature
+- ✅ Accesses `this.$refs`, `this.$apiUrl` (global properties)
+- ✅ Uses mixins pattern
 
-### 3. **Vue2-Migration-Interviewer-Checklist.md**
-Quick reference guide for interviewers:
-- Checklist for each section
-- Key questions to ask
-- Expected answers
-- Red flags to watch for
-- Time allocation guidelines
-- Decision framework
-- Notes template
+**What Happens in Vue 3:**
+❌ **Filters** → Runtime error (filters removed)  
+❌ **$set/$delete** → Runtime error (methods don't exist)  
+❌ **.sync** → Warning (deprecated, use v-model)  
+❌ **beforeDestroy/destroyed** → Hooks never called (renamed)  
+❌ **Event Bus** → Error (Vue constructor doesn't exist)  
+❌ **Directive hooks** → Won't work (names changed)  
+❌ **Transition classes** → Animation breaks (class names changed)  
+❌ **Global properties** → Undefined (different registration)  
+
+**Best For:** 
+- Testing if candidates can identify breaking changes
+- Simulating real migration scenarios
+- Assessing practical debugging skills
 
 ---
 
-## How to Use This System
+### 🟡 **Vue2MigrationExample.vue** (Educational Reference)
 
-### For Interviewers
+**Purpose:** An educational component that demonstrates all 15 migration scenarios with explanations.
 
-#### Step 1: Preparation (Before Interview)
-1. Review the **Interviewer Checklist**
-2. Understand all 15 migration sections
-3. Prepare the development environment
-4. Open `Vue2MigrationExample.vue` in your IDE
+**Characteristics:**
+- Uses `defineComponent` wrapper (compatible with both Vue 2.7+ and Vue 3)
+- Contains inline comments explaining each section
+- Shows Vue 2 patterns alongside Vue 3 solutions
+- More verbose for learning purposes
+- Includes detailed documentation references
 
-#### Step 2: Introduction (5 minutes)
-Explain to candidate:
-```
-"We're going to evaluate your Vue 2 to Vue 3 migration skills using a 
-comprehensive component that demonstrates 15 common migration scenarios. 
-You'll walk through each section, identify what needs to change, and 
-explain how you'd migrate it to Vue 3."
-```
-
-#### Step 3: Assessment (30-90 minutes based on level)
-
-**Junior Developer (30-45 min):**
-- Focus on Sections 1-7
-- Look for basic understanding
-- Provide hints if stuck
-
-**Mid-Level Developer (45-60 min):**
-- Cover Sections 1-12
-- Expect independent problem-solving
-- Discuss trade-offs
-
-**Senior Developer (60-90 min):**
-- All 15 sections
-- Deep-dive into architecture
-- Migration strategy discussion
-- Performance considerations
-
-#### Step 4: Evaluation
-Use the scoring rubric from the Evaluation Guide:
-- Technical Knowledge (30%)
-- Problem Solving (25%)
-- Code Quality (20%)
-- Communication (15%)
-- Best Practices (10%)
-
-#### Step 5: Decision
-Refer to the Decision Framework:
-- **Hire:** Score 11-15/15
-- **Consider:** Score 8-10/15
-- **Pass:** Score < 8/15
+**Best For:**
+- Teaching migration concepts
+- Self-study and preparation
+- Understanding the "why" behind changes
+- Reference during interviews
 
 ---
 
-### For Candidates (Self-Study)
+## How to Use Each Component
 
-#### Learning Path
+### Scenario 1: Practical Migration Test (Use LegacyVue2Component.vue)
 
-**Week 1: Fundamentals**
-1. Read Vue 3 official migration guide
-2. Study Sections 1-5 in Vue2MigrationExample.vue
-3. Practice converting Options API to Composition API
-4. Understand reactivity changes
+**Setup:**
+```bash
+# Give candidate the legacy component
+cp LegacyVue2Component.vue candidate-workspace/
 
-**Week 2: Intermediate Patterns**
-1. Study Sections 6-10
-2. Learn composables pattern
-3. Practice event bus alternatives
-4. Understand render function changes
+# Ask them to make it work in Vue 3
+```
 
-**Week 3: Advanced Topics**
-1. Study Sections 11-15
-2. Learn global API changes
-3. Practice async components
-4. Understand tree-shaking benefits
+**Instructions to Candidate:**
+```
+"This is a Vue 2 component from our legacy codebase. It works perfectly 
+in Vue 2, but we're migrating to Vue 3 and it's broken. 
 
-**Week 4: Practical Application**
-1. Migrate a real Vue 2 project
-2. Write tests for migrated code
-3. Document migration decisions
-4. Performance profiling
+Your task:
+1. Identify all the breaking changes
+2. Migrate it to work in Vue 3
+3. Explain each change you make
+4. Ensure all functionality still works
+
+You have 60 minutes."
+```
+
+**What to Evaluate:**
+- Can they identify ALL breaking changes?
+- Do they understand WHY each change is needed?
+- Is their migrated code idiomatic Vue 3?
+- Do they use Composition API or stick with Options API?
+- How do they handle edge cases?
 
 ---
 
-## Key Concepts Tested
+### Scenario 2: Guided Learning (Use Vue2MigrationExample.vue)
 
-### Breaking Changes
-- ✅ Removed APIs ($set, $delete, filters, .sync)
-- ✅ Changed APIs (lifecycle hooks, directives, transitions)
-- ✅ New patterns (Composition API, defineAsyncComponent)
+**Setup:**
+```bash
+# Open the educational component together
+# Walk through each section
+```
 
-### Modern Best Practices
-- ✅ Composition over mixins
-- ✅ Explicit emits declaration
-- ✅ provide/inject over event bus
-- ✅ TypeScript integration
-- ✅ Tree-shaking optimization
+**Instructions to Candidate:**
+```
+"This component demonstrates 15 common Vue 2 to Vue 3 migration scenarios.
+Let's go through each section and discuss:
+1. What's the Vue 2 pattern?
+2. Why did it change in Vue 3?
+3. What's the Vue 3 equivalent?
+4. What are the benefits?"
+```
 
-### Architecture Understanding
-- ✅ When to migrate vs when not to
-- ✅ Incremental migration strategies
-- ✅ Testing during migration
-- ✅ Third-party library compatibility
-- ✅ Performance implications
+**What to Evaluate:**
+- Conceptual understanding
+- Ability to explain trade-offs
+- Knowledge of best practices
+- Awareness of performance implications
 
 ---
 
-## Sample Interview Flow
+### Scenario 3: Hybrid Approach (Recommended)
 
-### Opening (5 min)
-```
-Interviewer: "Today we'll assess your Vue 2 to Vue 3 migration skills. 
-I have a component with 15 different Vue 2 patterns. Let's go through 
-them and discuss how you'd migrate each one."
-```
+**Phase 1: Discovery (15 min)**
+- Show `LegacyVue2Component.vue`
+- Ask: "What will break in Vue 3?"
+- List all issues without fixing
 
-### Section Walkthrough (60 min)
-```
-For each section:
-1. Ask: "What do you see here that would break in Vue 3?"
-2. Ask: "How would you fix this?"
-3. Ask: "Why did Vue 3 make this change?"
-4. Evaluate their solution
-5. Move to next section
-```
+**Phase 2: Migration (30 min)**
+- Candidate migrates the component
+- Can reference `Vue2MigrationExample.vue` if stuck
+- Focus on making it work correctly
 
-### Deep Dive (15 min)
-Pick 2-3 sections for deeper discussion:
-```
-"Let's talk more about composables. How would you refactor this mixin?
-What are the benefits? Any drawbacks?"
-```
+**Phase 3: Optimization (15 min)**
+- "How would you improve this using Vue 3 features?"
+- Discuss Composition API conversion
+- Talk about composables, better patterns
 
-### Strategy Discussion (10 min)
-```
-"If you had to migrate a 100-component application, what would be your approach?
-How would you handle third-party libraries? What about testing?"
-```
+---
 
-### Closing (5 min)
+## Detailed Breaking Changes in LegacyVue2Component.vue
+
+### 🔴 Critical Errors (Won't Run)
+
+#### 1. Filters (Line ~280-290)
+```vue
+<!-- Vue 2 -->
+<p>{{ message | uppercase }}</p>
+
+filters: {
+  uppercase(value) {
+    return value.toUpperCase()
+  }
+}
 ```
-"Do you have any questions about Vue 3 migration? Is there anything 
-you'd like to know about our migration process?"
+**Vue 3 Error:** `[Vue warn]: Failed to resolve filter: uppercase`
+
+**Fix:** Convert to computed property or method
+
+---
+
+#### 2. $set / $delete (Line ~340-350)
+```javascript
+// Vue 2
+this.$set(this.userProfile, 'email', 'john@example.com')
+this.$delete(this.userProfile, 'age')
+```
+**Vue 3 Error:** `TypeError: this.$set is not a function`
+
+**Fix:** Direct assignment (Proxy-based reactivity)
+
+---
+
+#### 3. Event Bus with new Vue() (Line ~170-190)
+```javascript
+// Vue 2
+const EventBus = new Vue({ ... })
+```
+**Vue 3 Error:** `ReferenceError: Vue is not defined`
+
+**Fix:** Use mitt library or provide/inject
+
+---
+
+#### 4. Lifecycle Hook Names (Line ~320-330)
+```javascript
+// Vue 2
+beforeDestroy() { ... }
+destroyed() { ... }
+```
+**Vue 3 Issue:** Hooks never called (silently ignored)
+
+**Fix:** Rename to `beforeUnmount` and `unmounted`
+
+---
+
+### ⚠️ Warnings & Deprecated Features
+
+#### 5. .sync Modifier (Line ~250)
+```vue
+<!-- Vue 2 -->
+<child-input :value.sync="inputValue" />
+```
+**Vue 3 Warning:** `[Vue warn]: .sync modifier is deprecated`
+
+**Fix:** Use `v-model:value="inputValue"`
+
+---
+
+#### 6. Directive Hook Names (Line ~390-405)
+```javascript
+// Vue 2
+directives: {
+  highlight: {
+    bind(el, binding) { ... },
+    update(el, binding) { ... }
+  }
+}
+```
+**Vue 3 Issue:** Hooks won't be called correctly
+
+**Fix:** Rename to `beforeMount` and `updated`
+
+---
+
+#### 7. Transition Classes (CSS, Line ~440-450)
+```css
+/* Vue 2 */
+.slide-enter { ... }
+.slide-leave { ... }
+```
+**Vue 3 Issue:** Animation won't work (classes don't match)
+
+**Fix:** Rename to `.slide-enter-from` and `.slide-leave-from`
+
+---
+
+#### 8. Render Function Signature (Line ~230-240)
+```javascript
+// Vue 2
+render(h) {
+  return h('h1', {
+    attrs: { id: 'heading' },
+    class: 'title',
+    style: { color: 'red' }
+  }, [text])
+}
+```
+**Vue 3 Issue:** Works but uses deprecated structure
+
+**Fix:** Flatten props object (no nested attrs/class/style)
+
+---
+
+#### 9. Old Slot Syntax (Line ~270)
+```vue
+<!-- Vue 2 -->
+<template slot-scope="{ item, index }">
+```
+**Vue 3 Warning:** `[Vue warn]: slot-scope is deprecated`
+
+**Fix:** Use `v-slot` or `#` shorthand
+
+---
+
+#### 10. Global Properties (Line ~310-315)
+```javascript
+// Vue 2
+this.apiUrl = this.$apiUrl
+```
+**Vue 3 Issue:** Property is undefined
+
+**Fix:** Access via `app.config.globalProperties` or inject
+
+---
+
+### 📋 Complete Checklist for Candidates
+
+Give this checklist to candidates to track their progress:
+
+```markdown
+## Migration Checklist
+
+### Critical Fixes (Must Fix)
+- [ ] Remove filters, convert to methods/computed
+- [ ] Replace $set/$delete with direct assignment
+- [ ] Replace Event Bus (new Vue) with mitt/provide-inject
+- [ ] Rename beforeDestroy → beforeUnmount
+- [ ] Rename destroyed → unmounted
+
+### Warnings (Should Fix)
+- [ ] Replace .sync with v-model
+- [ ] Update directive hook names
+- [ ] Update transition class names
+- [ ] Modernize render function
+- [ ] Update slot syntax
+- [ ] Fix global property access
+
+### Optional Improvements
+- [ ] Convert to Composition API
+- [ ] Extract mixins to composables
+- [ ] Add TypeScript
+- [ ] Optimize reactivity
+- [ ] Add proper error handling
 ```
 
 ---
 
-## Common Candidate Responses
+## Interview Questions by Component
 
-### 🟢 Strong Responses
+### For LegacyVue2Component.vue
 
-**On Reactivity:**
-> "Vue 3 uses Proxy instead of Object.defineProperty, so we can directly add/delete properties without $set/$delete. This is more intuitive and performant."
+**Discovery Phase:**
+1. "Without running it, what do you think will break in Vue 3?"
+2. "How many breaking changes can you identify?"
+3. "Which changes are critical vs. just warnings?"
 
-**On Composition API:**
-> "Composition API allows better code organization through logical grouping rather than splitting by option type. It also enables reusable composables and better TypeScript support."
+**Migration Phase:**
+4. "Walk me through your migration strategy"
+5. "Why does Vue 3 remove filters?"
+6. "How does Proxy-based reactivity differ from Object.defineProperty?"
 
-**On Migration Strategy:**
-> "I'd start with an audit of dependencies, then migrate utility functions and composables first, followed by presentational components, and finally complex stateful components. I'd use the compatibility build during transition."
-
-### 🔴 Weak Responses
-
-**Red Flag 1:**
-> "I'd just change the import statements and it should work."
-*(Shows lack of understanding of breaking changes)*
-
-**Red Flag 2:**
-> "Filters are still available, you just import them differently."
-*(Fundamental knowledge gap)*
-
-**Red Flag 3:**
-> "Mixins are fine, I'd keep using them in Vue 3."
-*(Doesn't understand composition benefits)*
+**Optimization Phase:**
+7. "Would you keep Options API or convert to Composition API? Why?"
+8. "How would you test this after migration?"
+9. "What performance improvements does Vue 3 offer here?"
 
 ---
 
-## Adaptation for Different Roles
+### For Vue2MigrationExample.vue
 
-### Frontend Developer Role
-- **Focus:** Component migration, UI patterns
-- **Emphasize:** Sections 1-8, 11-12
-- **Time:** 45 minutes
+**Conceptual Questions:**
+1. "Explain the benefit of composables over mixins"
+2. "When would you use ref() vs reactive()?"
+3. "Why did Vue 3 change the global API?"
 
-### Senior Frontend Engineer Role
-- **Focus:** Architecture, performance, strategy
-- **Emphasize:** All sections, especially 9-10, 13-14
-- **Time:** 75 minutes
-- **Add:** System design questions
-
-### Tech Lead Role
-- **Focus:** Migration planning, team coordination
-- **Emphasize:** Strategic questions, risk assessment
-- **Time:** 90 minutes
-- **Add:** Team training plans, timeline estimation
+**Deep Dive:**
+4. "Show me how you'd extract the mouse tracking logic into a composable"
+5. "How would you handle this component with TypeScript?"
+6. "What are the tree-shaking benefits of Vue 3's architecture?"
 
 ---
 
-## Integration with Existing Guides
+## Scoring Rubric (Updated)
 
-This migration evaluation system complements the existing interview guides:
+### Using LegacyVue2Component.vue
 
-- **Vue-Interview-Guide.md** - General Vue knowledge
-- **TypeScript-Interview-Guide.md** - Type safety in migration
-- **JavaScript-Interview-Guide.md** - Core JS concepts
-- **AI-Assisted-Development-Guide.md** - Using AI during migration
+| Criteria | Points | Details |
+|----------|--------|---------|
+| **Identifies All Breaking Changes** | 0-3 | Found all 10+ issues |
+| **Correct Migration** | 0-3 | All fixes work correctly |
+| **Understanding of Why** | 0-2 | Explains reasoning clearly |
+| **Code Quality** | 0-1 | Clean, idiomatic Vue 3 |
+| **Testing Approach** | 0-1 | Has plan to verify functionality |
 
----
-
-## Updates and Maintenance
-
-### When to Update
-- Vue releases new minor version with breaking changes
-- New migration patterns emerge in community
-- Feedback from actual interviews suggests improvements
-
-### How to Contribute
-1. Test with real candidates
-2. Document common issues/successes
-3. Propose improvements via PR
-4. Update scoring rubric based on data
+**Total: /10**
+- 9-10: Expert
+- 7-8: Strong
+- 5-6: Competent
+- <5: Needs training
 
 ---
 
-## Success Metrics
+## Time Estimates
 
-Track these metrics to improve the evaluation system:
-
-| Metric | Target | Current |
-|--------|--------|---------|
-| Candidate completion rate | >80% | - |
-| Interviewer satisfaction | >4/5 | - |
-| Hire accuracy (post-hire performance) | >85% | - |
-| Time to complete assessment | 45-60 min | - |
-| False positive rate | <10% | - |
+| Task | Junior | Mid-Level | Senior |
+|------|--------|-----------|--------|
+| **Identify Issues** | 15 min | 10 min | 5 min |
+| **Fix Critical Errors** | 30 min | 20 min | 10 min |
+| **Fix Warnings** | 20 min | 15 min | 10 min |
+| **Optional Improvements** | N/A | 15 min | 20 min |
+| **Total** | 65 min | 60 min | 45 min |
 
 ---
 
-## FAQ
+## Common Mistakes to Watch For
 
-**Q: Can I use only some sections?**  
-A: Yes! Choose sections relevant to the role level. Junior roles might only need 1-7.
+### ❌ Red Flags
 
-**Q: Should candidates write code or just explain?**  
-A: Both. Start with explanation, then ask for code samples for key sections.
+1. **Misses filters removal**
+   - Doesn't realize filters are completely gone
+   - Tries to import them from somewhere
 
-**Q: What if a candidate doesn't know Vue 2?**  
-A: This evaluation assumes Vue 2 knowledge. For Vue-only candidates, use the general Vue-Interview-Guide.md instead.
+2. **Keeps using $set/$delete**
+   - Doesn't understand Proxy-based reactivity
+   - Thinks it's still needed for arrays
 
-**Q: How do I handle time constraints?**  
-A: Prioritize sections based on role. Senior roles need all sections; junior roles can focus on fundamentals.
+3. **Uses event bus in Vue 3**
+   - Creates new Vue() instance anyway
+   - Doesn't know about mitt or provide/inject
 
-**Q: Can this be used remotely?**  
-A: Absolutely! Share screen, use online code editor, or send component beforehand.
+4. **Doesn't rename lifecycle hooks**
+   - Keeps beforeDestroy/destroyed
+   - Component cleanup never runs
+
+5. **Sticks with Options API unnecessarily**
+   - Misses opportunity to use Composition API
+   - Doesn't see benefits of composables
+
+### ✅ Green Flags
+
+1. **Systematic approach**
+   - Lists all issues first
+   - Prioritizes critical fixes
+   - Tests as they go
+
+2. **Explains reasoning**
+   - Knows WHY changes were made
+   - Understands trade-offs
+   - Can teach concepts
+
+3. **Modern patterns**
+   - Suggests Composition API
+   - Mentions composables
+   - Considers TypeScript
+
+4. **Testing mindset**
+   - Asks about test coverage
+   - Plans verification steps
+   - Considers edge cases
+
+---
+
+## Sample Solutions
+
+### Quick Fix (Keep Options API)
+
+Minimal changes to make it work in Vue 3 while keeping Options API:
+
+```vue
+<script>
+import { defineComponent } from 'vue'
+import mitt from 'mitt'
+
+const emitter = mitt()
+
+export default defineComponent({
+  name: 'MigratedComponent',
+  
+  // Keep Options API structure
+  data() {
+    return {
+      count: 0,
+      // ... other data
+    }
+  },
+  
+  computed: {
+    doubleCount() {
+      return this.count * 2
+    },
+    
+    // Replace filters with computed
+    uppercaseMessage() {
+      return this.message.toUpperCase()
+    }
+  },
+  
+  // Rename lifecycle hooks
+  beforeUnmount() {
+    this.cleanup()
+  },
+  
+  unmounted() {
+    this.lifecycleStatus = 'unmounted'
+  },
+  
+  methods: {
+    // Direct assignment instead of $set
+    addEmail() {
+      this.userProfile.email = 'john@example.com'
+    },
+    
+    // Direct deletion instead of $delete
+    removeAge() {
+      delete this.userProfile.age
+    },
+    
+    // Use mitt instead of Vue event bus
+    setupEventBus() {
+      emitter.on('custom-event', (data) => {
+        this.messages.push(`Received: ${data}`)
+      })
+    }
+  },
+  
+  // Update directive hooks
+  directives: {
+    highlight: {
+      beforeMount(el, binding) {
+        el.style.backgroundColor = binding.value
+      },
+      updated(el, binding) {
+        if (binding.value !== binding.oldValue) {
+          el.style.backgroundColor = binding.value
+        }
+      }
+    }
+  }
+})
+</script>
+
+<template>
+  <!-- Replace filters with computed -->
+  <p>{{ uppercaseMessage }}</p>
+  
+  <!-- Replace .sync with v-model -->
+  <child-input v-model:value="inputValue" />
+  
+  <!-- Update transition classes -->
+  <transition name="slide">
+    <div v-if="showBox">Content</div>
+  </transition>
+</template>
+
+<style>
+/* Update transition class names */
+.slide-enter-from { transform: translateX(-100%); }
+.slide-leave-from { transform: translateX(0); }
+</style>
+```
+
+### Full Migration (Composition API)
+
+Complete refactor to modern Vue 3 patterns:
+
+```vue
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useMouse } from '@/composables/useMouse'
+import { useEventBus } from '@/composables/useEventBus'
+
+// Reactivity (no $set/$delete needed)
+const count = ref(0)
+const userProfile = ref({
+  name: 'John Doe',
+  age: 30
+})
+
+// Computed (replaces filters)
+const doubleCount = computed(() => count.value * 2)
+const uppercaseMessage = computed(() => message.value.toUpperCase())
+
+// Composables (replaces mixins)
+const { mouseX, mouseY } = useMouse()
+const { messages, sendMessage, clearMessages } = useEventBus()
+
+// Methods
+const increment = () => count.value++
+const addEmail = () => {
+  userProfile.value.email = 'john@example.com'
+}
+
+// Lifecycle (renamed hooks)
+onMounted(() => {
+  console.log('Mounted')
+})
+
+onBeforeUnmount(() => {
+  console.log('Cleanup')
+})
+</script>
+
+<template>
+  <p>{{ uppercaseMessage }}</p>
+  <child-input v-model:value="inputValue" />
+</template>
+```
 
 ---
 
 ## Additional Resources
 
-### Official Documentation
+### For Candidates
 - [Vue 3 Migration Guide](https://v3-migration.vuejs.org/)
+- [Breaking Changes List](https://v3-migration.vuejs.org/breaking-changes/)
+- [Composition API FAQ](https://vuejs.org/guide/extras/composition-api-faq.html)
+
+### For Interviewers
 - [Vue 3 Documentation](https://vuejs.org/)
-- [Composition API RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0013-composition-api.md)
-
-### Community Resources
-- [VueUse](https://vueuse.org/) - Collection of composables
-- [Vue School Migration Course](https://vueschool.io/courses/upgrading-to-vue-3)
-- [Migration Build](https://v3-migration.vuejs.org/migration-build.html)
-
-### Tools
-- [Vue 3 Codemod](https://github.com/vuejs/vue-codemod) - Automated migration tool
-- [eslint-plugin-vue](https://eslint.vuejs.org/) - Linting rules
-- [@vue/compat](https://v3-migration.vuejs.org/migration-build.html) - Compatibility build
+- [Migration Build Tool](https://v3-migration.vuejs.org/migration-build.html)
+- [Vue Codemod (Automated)](https://github.com/vuejs/vue-codemod)
 
 ---
 
@@ -342,24 +609,21 @@ A: Absolutely! Share screen, use online code editor, or send component beforehan
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0.0 | 2026-06-02 | Initial release with 15 sections |
+| 1.1.0 | 2026-06-02 | Added LegacyVue2Component.vue for realistic testing |
+| 1.0.0 | 2026-06-02 | Initial release with Vue2MigrationExample.vue |
 
 ---
 
-## License
+## Feedback & Contributions
 
-This evaluation system is part of the Frontend-Interview-challenges project.
-
----
-
-## Support
-
-For questions or improvements:
-1. Check existing documentation
-2. Review Vue 3 official guides
-3. Test with sample candidates
-4. Provide feedback for iterations
+If you use this evaluation system, please share:
+- Which component worked better for your interviews?
+- What breaking changes did candidates struggle with most?
+- Any additional scenarios we should add?
 
 ---
 
-**Last Updated:** June 2, 2026
+**Last Updated:** June 2, 2026  
+**Components:** 2 (Legacy + Educational)  
+**Breaking Changes Covered:** 15+  
+**Difficulty Levels:** Beginner to Advanced
