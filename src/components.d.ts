@@ -11,11 +11,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AsyncExample: typeof import('./components/AsyncExample.vue')['default']
+    LegacyVue2Component: typeof import('./components/LegacyVue2Component.vue')['default']
     README: typeof import('./components/README.md')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheCounter: typeof import('./components/TheCounter.vue')['default']
     TheFooter: typeof import('./components/TheFooter.vue')['default']
     TheInput: typeof import('./components/TheInput.vue')['default']
+    Vue2MigrationExample: typeof import('./components/Vue2MigrationExample.vue')['default']
   }
 }

@@ -18,6 +18,13 @@ interface Challenge {
 
 const challenges: Challenge[] = [
   {
+    id: 0,
+    title: 'Sr.UI Developer Comprehensive Assessment',
+    description: 'Complete assessment covering HTML/CSS, responsive design, API integration, Vue migration, accessibility, performance, TypeScript, state management, and lifecycle hooks.',
+    difficulty: 'advanced',
+    topics: ['Comprehensive', 'TypeScript', 'Accessibility', 'Performance', 'API Integration'],
+  },
+  {
     id: 1,
     title: 'Custom Directive System',
     description: 'Build a library of custom directives for common UI patterns (debounce, throttle, focus).',
@@ -128,10 +135,47 @@ const challenges: Challenge[] = [
 
     <!-- Challenges Grid -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 md:grid-cols-2">
-      <div
-        v-for="challenge in challenges"
+      <!-- Special Sr.UI Assessment Card -->
+      <RouterLink
+        to="/challenges/advanced/sr-ui-assessment"
+        class="group block border-2 border-red-500 rounded-xl p-6 transition-all duration-300 dark:border-red-400 hover:border-red-600 hover:shadow-lg dark:hover:border-red-300 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20"
+      >
+        <div class="mb-3 flex items-start justify-between">
+          <span class="rounded bg-red-500 px-2 py-1 text-xs text-white font-semibold">
+            ⭐ ASSESSMENT
+          </span>
+          <div i-carbon-badge-completed class="text-red-500 text-xl" />
+        </div>
+
+        <h3 class="mb-2 text-xl font-bold transition-colors group-hover:text-red-600 dark:group-hover:text-red-300">
+          {{ challenges[0].title }}
+        </h3>
+
+        <p class="mb-4 text-sm text-gray-700 leading-relaxed dark:text-gray-300 font-medium">
+          {{ challenges[0].description }}
+        </p>
+
+        <div class="mb-4 flex flex-wrap gap-2">
+          <span
+            v-for="topic in challenges[0].topics"
+            :key="topic"
+            class="rounded bg-red-100 px-2 py-1 text-xs text-red-700 font-semibold dark:bg-red-900 dark:text-red-300"
+          >
+            {{ topic }}
+          </span>
+        </div>
+
+        <button class="w-full rounded-lg bg-red-600 px-4 py-2 text-white font-semibold transition-colors hover:bg-red-700 shadow-md">
+          Start Assessment →
+        </button>
+      </RouterLink>
+
+      <!-- Regular Challenges -->
+      <RouterLink
+        v-for="challenge in challenges.slice(1)"
         :key="challenge.id"
-        class="group border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 dark:border-gray-700 hover:border-red-500 hover:shadow-md dark:hover:border-red-400"
+        :to="`/challenges/advanced/${String(challenge.id).padStart(2, '0')}`"
+        class="group block border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 dark:border-gray-700 hover:border-red-500 hover:shadow-md dark:hover:border-red-400"
       >
         <div class="mb-3 flex items-start justify-between">
           <span class="rounded bg-red-100 px-2 py-1 text-xs text-red-700 font-semibold dark:bg-red-900 dark:text-red-300">
@@ -165,7 +209,7 @@ const challenges: Challenge[] = [
         <button class="w-full rounded-lg bg-red-500 px-4 py-2 text-white font-semibold transition-colors hover:bg-red-600">
           Start Challenge
         </button>
-      </div>
+      </RouterLink>
     </div>
   </div>
 </template>

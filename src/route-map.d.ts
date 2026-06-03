@@ -54,6 +54,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/challenges/advanced/sr-ui-assessment': RouteRecordInfo<
+      '/challenges/advanced/sr-ui-assessment',
+      '/challenges/advanced/sr-ui-assessment',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/challenges/beginner/[id]': RouteRecordInfo<
       '/challenges/beginner/[id]',
       '/challenges/beginner/:id',
@@ -123,6 +130,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/beginner.vue': {
       routes:
         | '/beginner'
+      views:
+        | never
+    }
+    'src/pages/challenges/advanced/sr-ui-assessment.vue': {
+      routes:
+        | '/challenges/advanced/sr-ui-assessment'
       views:
         | never
     }
