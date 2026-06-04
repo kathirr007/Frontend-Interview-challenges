@@ -48,6 +48,9 @@ https://play.vuejs.org/#eNp9UsFu2zAM/RVC51balvTieQW2oYcNwzas3U0XQ2ZiNbIkSHLmIMi/
 -- (API Integration with axios - options API)
 https://play.vuejs.org/#eNp9UlFv1DAM/itRnkDaUuBuL6VMArQHEALExlteqtS7ZpcmUeIcPU377zjJ2p2maVLl2P6c+PNX3/PP3otDAt7yLqqgPV5K2zRsRPSxbZq76Kw3vYLRmQGCwKPXyg0glJuaFCFEaWH2LiAb4LZPBtm9tIwNPfZv3lafsQCYgs1RjR/yQYa+rlnbUoAwUTcEihjrxk05GfubG7EfOmLJN49AN24vr6EPaqwVLSHbimjrE7LD+URczSfJYym7gTBJzk4GWiFWhhFCEN6UNzK3Ez5dxKPJzvj+jMyHbDbZbLO5qKNOfdhp27ILP7N3H5cBy0V+xjEqZ2/1TmRVSfFyRXKS0msD4ZdH7WyUvF10k7w3xv37XnIYElCrmlcjqP0L+bs455zkvwPQQAeQfMWQyAFW+Or6J8zkryAJlQxVvwL+gehMyhxr2ZdkB6J9UlfYfpvyOmi7u4lXM4KNy1CZaPnxpV5yWruvr4z+RHcjtsvCkIq6vH8+9f6ZjhV4pt+sXclIvqy0GqyI+6Pv1V4McGgeS9YOD/8BMY4Fxw==
 
+Challenge 07 Nuxt AI debugging
+---
+https://stackblitz.com/edit/nuxt-starter-dafkwvm4?file=app%2Fpages%2Findex.vue
 
 Examples
 ---
