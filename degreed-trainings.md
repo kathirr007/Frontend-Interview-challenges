@@ -42,6 +42,6 @@ Assesement link: https://degreed.com/plan/3660882
 
 1. https://anthropic.skilljar.com/introduction-to-agent-skills - completed
 2. https://capgemini.udemy.com/course/how-to-build-ai-agents/learn/lecture/44085096#overview - completed
-3. https://anthropic.skilljar.com/introduction-to-model-context-protocol
+3. https://anthropic.skilljar.com/introduction-to-model-context-protocol - completed
 4. https://capgemini.udemy.com/course/claude-code-generative-ai-assisted-development/learn/lecture/53402389#overview - completed
 5. https://anthropic.skilljar.com/claude-with-google-vertex
