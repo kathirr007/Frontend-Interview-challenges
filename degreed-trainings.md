@@ -10,7 +10,7 @@ Assesement link: https://degreed.com/plan/2983559
 
 ### Prompt Engineering
 
-Assesement link: https://degreed.com/plan/3669909
+Assesement link: https://degreed.com/plan/3660882
 
 1. https://capgemini.udemy.com/course/prompt-engineering-for-everyone-bootcamp/learn/lecture/50569767#overview - completed
 2. https://capgemini.udemy.com/course/prompt-engineering-frameworks/learn/lecture/51510283#overview - completed
@@ -23,7 +23,7 @@ Assesement link: https://degreed.com/plan/3669909
 
 ### Agentic AI (Beginner)
 
-Assesement link: https://degreed.com/plan/3660882
+Assesement link: https://degreed.com/plan/3669909
 
 1. https://capgemini.udemy.com/course/intro-to-ai-agents-and-agentic-ai/learn/lecture/52159201#overview - completed
 2. https://capgemini.udemy.com/course/complete-mcp-developer-guide-ai-agents-servers-tools/learn/lecture/52104589#overview - completed
