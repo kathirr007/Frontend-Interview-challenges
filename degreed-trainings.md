@@ -1,6 +1,7 @@
 ### Core Generative AI (Beginner)
 
-Assesement link: https://degreed.com/plan/2983559
+Assesement link: https://degreed.com/plan/2983559 
+1st attempt 27/05/2026
 
 1. https://degreed.com/pathway/1pn0je67pn/pathway - completed
 2. https://capgemini.udemy.com/course/generative-ai-architectures-with-llm-prompt-rag-vector-db/learn/quiz/6645891#overview - completed
@@ -44,4 +45,4 @@ Assesement link: https://degreed.com/plan/3660882
 2. https://capgemini.udemy.com/course/how-to-build-ai-agents/learn/lecture/44085096#overview - completed
 3. https://anthropic.skilljar.com/introduction-to-model-context-protocol - completed
 4. https://capgemini.udemy.com/course/claude-code-generative-ai-assisted-development/learn/lecture/53402389#overview - completed
-5. https://anthropic.skilljar.com/claude-with-google-vertex
+5. https://anthropic.skilljar.com/claude-with-google-vertex - completed
