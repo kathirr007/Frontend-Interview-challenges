@@ -1,3 +1,6 @@
+77fde367-5f90-4ce1-9e48-01c326d409c9
+
+
 ### Core Generative AI (Beginner)
 
 Assesement link: https://degreed.com/plan/2983559 
